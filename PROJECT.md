@@ -1,0 +1,183 @@
+# Developer Learning Platform
+
+## Vision
+
+Build a hands-on engineering learning platform where developers improve by
+doing realistic software-engineering work inside simulated companies.
+
+The goal is NOT to teach programming through traditional courses.
+
+The goal is to simulate the situations engineers actually encounter:
+
+- Reviewing pull requests
+- Debugging bugs
+- Investigating production incidents
+- Understanding unfamiliar codebases
+- Designing systems
+- Working with databases
+- Testing
+- Security
+- Working effectively with AI-generated code
+
+The experience should feel like being an engineer at a real software company.
+
+---
+
+## Core Philosophy
+
+1. Learn by doing.
+2. Realistic engineering problems over artificial puzzles.
+3. Professional realism comes before gamification.
+4. AI should augment the experience, not replace engineering judgment.
+5. Deterministic systems should establish ground truth whenever possible.
+6. Users should understand WHY something is correct or incorrect.
+7. Start narrow and build depth before breadth.
+
+---
+
+## Initial Product
+
+The first experience is a PR Review Trainer.
+
+A user joins a fictional software company and receives a realistic pull
+request associated with a ticket.
+
+They inspect:
+
+- The ticket
+- Existing code
+- The PR diff
+- Tests
+- Relevant documentation
+- Existing architecture
+
+They submit review comments.
+
+The platform evaluates their review and explains:
+
+- Issues they found
+- Important issues they missed
+- Incorrect concerns
+- Quality of reasoning
+- What they should learn from the exercise
+
+---
+
+## Initial Technology
+
+Frontend:
+- React
+- TypeScript
+
+Backend:
+- Java
+- Spring Boot
+- Gradle
+
+Database:
+- PostgreSQL
+
+Development:
+- Docker
+- Git
+
+Deployment will initially target AWS, but infrastructure should remain simple.
+
+---
+
+## Initial Domain
+
+Start with ONE fictional company.
+
+The company should have a small but realistic Java/Spring backend.
+
+Example:
+
+A fintech/e-commerce/SaaS company with:
+- 1–3 services
+- PostgreSQL
+- REST APIs
+- Authentication
+- Background jobs/events where useful
+
+Do NOT build a huge microservice architecture initially.
+
+---
+
+## AI Philosophy
+
+AI will eventually help generate:
+
+- Pull requests
+- Bugs
+- Tickets
+- Scenario variations
+- Fictional coworker comments
+- Hints
+- Explanations
+- Feedback
+
+However:
+
+AI must NOT be the ultimate source of truth for whether an engineering
+decision is correct.
+
+Scenario definitions and deterministic tests should establish the expected
+behavior whenever possible.
+
+AI can interpret and evaluate reasoning, but important technical claims
+should be grounded in the actual codebase, tests, architecture, or explicit
+scenario metadata.
+
+---
+
+## Gamification
+
+Gamification should support learning rather than turn engineering into a
+mobile game.
+
+Eventually include:
+
+- XP
+- Levels
+- Skill categories
+- Difficulty
+- Achievements
+- Streaks
+- Leaderboards
+
+Target roughly:
+
+80% professional simulation
+20% game layer
+
+---
+
+## Long-Term Roadmap
+
+1. PR Review Trainer
+2. Gamification and progression
+3. AI-powered scenario generation/evaluation
+4. Debugging challenges
+5. Production incidents
+6. Persistent simulated company
+7. AI-era engineering scenarios
+8. Multiple companies/domains
+9. Multiple technology stacks
+10. System design, databases, security, DevOps/SRE and architecture tracks
+
+---
+
+## Important Constraints
+
+Do not prematurely build:
+
+- Multiple companies
+- Multiple programming languages
+- A huge microservice architecture
+- A full GitHub/Jira/Slack clone
+- An integrated AI coding assistant
+- Complicated infrastructure
+- A massive gamification system
+
+Build the smallest version that proves the core experience is fun and useful.
