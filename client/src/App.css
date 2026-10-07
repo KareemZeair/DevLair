@@ -1,0 +1,15 @@
+.welcome-shell { align-items: center; background: radial-gradient(circle at 10% 20%, #ffd166 0 6%, transparent 6.5%), radial-gradient(circle at 90% 85%, #ef8354 0 8%, transparent 8.5%), #f7f3e8; display: flex; justify-content: center; min-height: 100vh; padding: 2rem; }
+.welcome-card { background: #fffdf7; border: 3px solid #162235; box-shadow: 10px 10px 0 #162235; max-width: 620px; padding: 3rem; }
+.eyebrow, .assignment-label, .guide-name { font-size: .78rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+.eyebrow { color: #d45235; margin: 0; }
+.guide-name { color: #4a5c76; margin: .75rem 0 1.5rem; }
+.juno-avatar { align-items: center; background: #20a39e; border: 3px solid #162235; border-radius: 50%; color: #fffdf7; display: flex; font-size: 2.2rem; font-weight: 900; height: 76px; justify-content: center; margin-top: 1.5rem; width: 76px; }
+h1 { font-family: Georgia, serif; font-size: clamp(2.8rem, 7vw, 5rem); line-height: .95; margin: 0; }
+.intro { font-size: 1.1rem; line-height: 1.6; max-width: 54ch; }
+.assignment-preview { background: #dce9e1; border-left: 6px solid #20a39e; margin: 2rem 0; padding: 1rem 1.25rem; }
+.assignment-preview strong { display: block; font-size: 1.05rem; margin-top: .35rem; }
+.assignment-preview p { margin: .5rem 0 0; }
+button { background: #d45235; border: 3px solid #162235; box-shadow: 4px 4px 0 #162235; color: #fffdf7; cursor: pointer; font-weight: 800; padding: .85rem 1.25rem; }
+button:hover { background: #b94029; transform: translate(1px, 1px); box-shadow: 3px 3px 0 #162235; }
+.foundation-note { color: #4a5c76; font-size: .85rem; margin-bottom: 0; margin-top: 2rem; }
+@media (max-width: 560px) { .welcome-card { padding: 2rem; box-shadow: 6px 6px 0 #162235; } }

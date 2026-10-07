@@ -1,0 +1,14 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: devlair
+      POSTGRES_USER: devlair
+      POSTGRES_PASSWORD: devlair
+    ports:
+      - "5432:5432"
+    volumes:
+      - devlair-postgres-data:/var/lib/postgresql/data
+
+volumes:
+  devlair-postgres-data:

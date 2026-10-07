@@ -106,3 +106,35 @@ Scenario database
 → feedback
 
 rather than building the entire backend before the frontend.
+
+---
+
+## ADR-008 — PostgreSQL Schema with Flyway, Application Data with JPA
+
+Decision:
+
+Use PostgreSQL as the application database. Flyway migrations define the
+database schema and its versioned changes. Spring Data JPA with Hibernate maps
+application Java objects to those tables for ordinary reads and writes.
+
+Reason:
+
+Flyway makes database changes explicit, reviewable, and reproducible. JPA keeps
+the application code focused on meaningful domain objects rather than repeated
+SQL boilerplate. Using both teaches and preserves the boundary between database
+design and application persistence.
+
+---
+
+## ADR-009 — Containerize PostgreSQL First
+
+Decision:
+
+During early development, run React and Spring Boot directly from their native
+development tools. Use Docker Compose to run PostgreSQL locally.
+
+Reason:
+
+This keeps frontend and backend debugging straightforward while providing a
+repeatable local database. Dockerfiles for the client and server can follow
+after the first end-to-end learning flow works.

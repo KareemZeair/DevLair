@@ -86,6 +86,30 @@ For larger tasks:
 
 Do not make unrelated changes.
 
+## Living Documentation
+
+The Markdown files are the project's shared memory and learning guide.
+
+- Update PROJECT.md when the product direction or user experience changes.
+- Update ROADMAP.md when the delivery sequence or completed milestones change.
+- Update DECISIONS.md when an architectural choice is made or revised.
+- Keep DEVELOPMENT.md current with local setup, commands, and concise explanations
+  of the tools used in this project.
+
+When making a meaningful change, explain the relevant concept in plain language
+and update the appropriate documentation in the same checkpoint.
+
+## Developer Learning Profile
+
+The developer is building their first full project and wants to understand how
+the application parts work together, not receive opaque generated code.
+
+- Explain concepts, tools, terminology, and data flow slowly and intuitively.
+- Connect each implementation step to its role in the whole system.
+- Prefer incremental checkpoints with verification over large unexplained drops.
+- Record durable new development-process instructions and learning preferences
+  in this section when they are given.
+
 ## Important
 
 When uncertain about a major product or architecture decision, stop and ask
