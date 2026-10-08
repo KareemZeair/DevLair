@@ -65,3 +65,8 @@
 ## Important
 
 1. **Uncertainty**: When uncertain about a major product or architecture decision, stop and ask rather than silently choosing a direction that could affect the whole project.
+
+## Development Environment
+
+1. **IntelliJ IDEA**: Use IntelliJ IDEA for development.
+2. **Gradle**: Use Gradle for building and managing the project.
