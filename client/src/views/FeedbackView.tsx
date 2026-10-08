@@ -1,76 +1,30 @@
-import type { ReviewFeedback, ScenarioDetail } from '../types'
+import { useState } from 'react'
+import './FeedbackView.css'
+import { JavaCodeLine } from '../components/JavaCodeLine'
+import { MiloMessenger } from '../components/MiloMessenger'
+import { OperationsShell } from '../components/OperationsShell'
+import type { FindingFeedback, ReviewFeedback, ScenarioDetail } from '../types'
 
-type FeedbackViewProps = {
-  scenario: ScenarioDetail
-  feedback: ReviewFeedback
-  onReviewAgain: () => void
-}
+type FeedbackViewProps = { scenario: ScenarioDetail; feedback: ReviewFeedback; onReviewAgain: () => void }
 
 export function FeedbackView({ scenario, feedback, onReviewAgain }: FeedbackViewProps) {
-  return (
-    <main className="welcome-shell">
-      <section className="welcome-card feedback-card" aria-labelledby="feedback-title">
-        <p className="eyebrow">Review feedback</p>
-        <h1 id="feedback-title">{scenario.title}</h1>
-        <p className="intro">
-          These results come from seeded findings in the scenario, not from an AI guessing whether a bug exists. A
-          comment counts as found when it sits on the same file and inside the expected line range.
-        </p>
-        <FeedbackGroup title="Issues you found" items={feedback.found} empty="You did not match any seeded findings yet." />
-        <FeedbackGroup title="Important issues you missed" items={feedback.missed} empty="You covered every seeded finding." />
-        <section>
-          <h2>Comments that did not match a known issue</h2>
-          {feedback.unmatchedComments.length === 0 ? (
-            <p>No extra comments.</p>
-          ) : (
-            <ul className="feedback-list">
-              {feedback.unmatchedComments.map((comment) => (
-                <li key={`${comment.filePath}-${comment.lineNumber}-${comment.body}`}>
-                  <strong>
-                    {comment.filePath}:{comment.lineNumber}
-                  </strong>
-                  <p>{comment.body}</p>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-        <button type="button" onClick={onReviewAgain}>
-          Review again
-        </button>
-      </section>
-    </main>
-  )
+  return <OperationsShell mission="Review debrief" status="Mission report filed"><section className="welcome-shell"><section className="welcome-card feedback-card" aria-labelledby="feedback-title"><p className="eyebrow">Review debrief · Sidekick Supply Co.</p><h1 id="feedback-title">Mission report</h1><p className="intro">Here is the exact code each prepared finding covers and the safer direction for it.</p><section className="debrief-totals" aria-label="Review outcome"><div><strong>{feedback.found.length}</strong><span>found</span></div><div><strong>{feedback.missed.length}</strong><span>still open</span></div></section><FindingSection label="Found by your review" findings={feedback.found} scenario={scenario} state="found" /><FindingSection label="Still worth investigating" findings={feedback.missed} scenario={scenario} state="missed" />{feedback.unmatchedComments.length > 0 ? <details className="other-comments"><summary>Other comments ({feedback.unmatchedComments.length})</summary>{feedback.unmatchedComments.map((comment) => <p key={`${comment.filePath}-${comment.lineNumber}`}><code>{comment.filePath}:{comment.lineNumber}</code> - {comment.body}</p>)}</details> : null}<button type="button" onClick={onReviewAgain}>Return to pull request</button></section><MiloMessenger heading="Debrief complete" message="The report is compact on purpose: compare the submitted code with the safer version, then try again whenever you are ready." messageKey="review-feedback" /></section></OperationsShell>
 }
 
-function FeedbackGroup({
-  title,
-  items,
-  empty,
-}: {
-  title: string
-  items: ReviewFeedback['found']
-  empty: string
-}) {
-  return (
-    <section>
-      <h2>{title}</h2>
-      {items.length === 0 ? (
-        <p>{empty}</p>
-      ) : (
-        <ul className="feedback-list">
-          {items.map((item) => (
-            <li key={item.title}>
-              <span className="severity">{item.severity}</span>
-              <strong>{item.title}</strong>
-              <p>
-                {item.filePath} lines {item.startLine}–{item.endLine}
-              </p>
-              <p>{item.explanation}</p>
-            </li>
-          ))}
-        </ul>
-      )}
-    </section>
-  )
+function FindingSection({ label, findings, scenario, state }: { label: string; findings: FindingFeedback[]; scenario: ScenarioDetail; state: 'found' | 'missed' }) {
+  if (findings.length === 0) return null
+  return <section className="finding-section"><h2>{label}</h2>{findings.map((finding) => <FindingCard key={finding.title} finding={finding} scenario={scenario} state={state} />)}</section>
 }
+
+function FindingCard({ finding, scenario, state }: { finding: FindingFeedback; scenario: ScenarioDetail; state: 'found' | 'missed' }) {
+  const [expanded, setExpanded] = useState(false)
+  const file = scenario.files.find((candidate) => candidate.path === finding.filePath)
+  const submittedCode = file?.proposedContent.split('\n').slice(finding.startLine - 1, finding.endLine).join('\n') ?? ''
+  return <article className={`finding-card ${state} ${expanded ? 'is-expanded' : ''}`}><header><span className="severity">{finding.severity}</span><strong>{finding.title}</strong><small>{shortPath(finding.filePath)} · lines {finding.startLine}-{finding.endLine}</small></header><p>{finding.explanation}</p><div className="code-comparison"><CodeSample label="Submitted" code={submittedCode} /><CodeSample label="Corrected code" code={finding.recommendedCode} /></div><button className="expand-code" type="button" onClick={() => setExpanded((current) => !current)} aria-expanded={expanded}>{expanded ? 'Use compact code view' : 'Enlarge code view'}</button></article>
+}
+
+function CodeSample({ label, code }: { label: string; code: string | null }) {
+  return <section><span>{label}</span><pre>{code ? code.split('\n').map((line, index) => <span className="code-sample-line" key={index}><JavaCodeLine text={line} /></span>) : 'No code sample recorded.'}</pre></section>
+}
+
+function shortPath(path: string) { return path.split('/').slice(-1)[0] }

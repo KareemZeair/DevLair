@@ -51,6 +51,7 @@ export type FindingFeedback = {
   severity: string
   title: string
   explanation: string
+  recommendedCode: string | null
 }
 
 export type UnmatchedComment = {

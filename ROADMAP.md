@@ -2,7 +2,14 @@
 
 ## Current status
 
-Phase 1 is in progress. The first learner can register, complete Juno’s tour, open the seeded PR, leave line comments, and receive deterministic found/missed feedback. A full dashboard, extra scenarios, and app Dockerfiles are still later work.
+Phase 1 is in progress. The first learner can register, complete Milo’s tour, open the seeded PR, leave line comments, and receive deterministic found/missed feedback. A full dashboard, extra scenarios, and app Dockerfiles are still later work.
+
+The near-term interface-polish work is tracked in `TODO.md`, including bespoke
+Milo art, motion, dark mode, and the popup-guide direction.
+
+The primary product remains learning mode. A separate employer assessment mode
+is a later possibility, only after the learning loop and scenario quality have
+been proven.
 
 ---
 
@@ -166,3 +173,18 @@ Eventually add:
 - DevOps
 - SRE
 - Architecture
+
+---
+
+## Future Product Mode: Employer Assessment
+
+This is intentionally not scheduled before the learning platform is proven.
+
+- Neutral, distraction-light assessment presentation
+- Standardized role-relevant scenarios and scoring rubrics
+- Time controls, accessibility support, candidate reports, and integrity work
+- No tutorial hints, corrected-code debriefs, or game-style interruption while
+  an assessment is in progress
+
+This mode complements algorithm practice platforms. It should measure practical
+engineering judgment, not attempt to become a LeetCode replacement first.

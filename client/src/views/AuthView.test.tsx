@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 import { AuthView } from './AuthView'
 
@@ -26,5 +26,17 @@ describe('AuthView', () => {
     )
 
     expect(screen.getByRole('alert')).toHaveTextContent('An account already exists for that email address.')
+  })
+
+  it('explains invalid email and short password before submitting', () => {
+    const onSubmit = vi.fn()
+    const view = render(<AuthView mode="register" error={null} pending={false} onSubmit={onSubmit} onBack={() => undefined} />)
+    const form = within(view.container)
+    fireEvent.change(form.getByLabelText('Email'), { target: { value: 'not-an-email' } })
+    fireEvent.change(form.getByLabelText('Password'), { target: { value: 'short' } })
+    fireEvent.click(form.getByRole('button', { name: 'Create account' }))
+    expect(form.getByText('Enter an email address in the format name@example.com.')).toBeInTheDocument()
+    expect(form.getByText('Your password needs at least 8 characters.')).toBeInTheDocument()
+    expect(onSubmit).not.toHaveBeenCalled()
   })
 })

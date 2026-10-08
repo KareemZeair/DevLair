@@ -36,10 +36,13 @@ public class ReviewFinding {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String explanation;
 
+    @Column(name = "recommended_code", columnDefinition = "TEXT")
+    private String recommendedCode;
+
     protected ReviewFinding() {
     }
 
-    public ReviewFinding(UUID scenarioId, String filePath, int startLine, int endLine, String severity, String title, String explanation) {
+    public ReviewFinding(UUID scenarioId, String filePath, int startLine, int endLine, String severity, String title, String explanation, String recommendedCode) {
         this.scenarioId = scenarioId;
         this.filePath = filePath;
         this.startLine = startLine;
@@ -47,6 +50,7 @@ public class ReviewFinding {
         this.severity = severity;
         this.title = title;
         this.explanation = explanation;
+        this.recommendedCode = recommendedCode;
     }
 
     public String getFilePath() {
@@ -71,5 +75,9 @@ public class ReviewFinding {
 
     public String getExplanation() {
         return explanation;
+    }
+
+    public String getRecommendedCode() {
+        return recommendedCode;
     }
 }

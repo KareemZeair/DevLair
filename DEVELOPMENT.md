@@ -10,6 +10,66 @@ checkpoints: introduce one concept, connect it to the system, implement it,
 verify it, and document the result. Explanations should use plain language and
 show how a request or data item travels between the frontend, API, and database.
 
+## Interface Direction
+
+Product copy uses commas or periods instead of em dashes. Keep this convention
+in all learner-facing frontend text.
+
+The first learner flow deliberately has two visual modes. Milo's onboarding is
+a Sidekick Supply Co. command-center tutorial: chat messages and choice buttons
+spotlight the ticket, architecture rule, and pull request in sequence. The PR
+review workspace is intentionally calmer and follows familiar developer-tool
+patterns such as unified diffs and inline review comments. It is inspired by
+common workflows, not copied GitHub branding or UI assets.
+
+Registration validates email format and password length in the browser for
+immediate feedback. Spring Boot validates the same request again on the server,
+because browser checks improve usability but cannot be trusted for security.
+
+The next visual-polish items live in `TODO.md`. Planned motion and Milo
+notifications must respect operating-system reduced-motion settings; sound must
+be optional. These are accessibility requirements, not cosmetic extras.
+
+Milo's tutorial is divided into sections, not delivered as one long lecture.
+Each section gives context for one capability, lets the learner try it, then
+returns feedback before a future feature begins its own focused tutorial.
+
+The current PR Review Trainer is read-only by design. A learner comments on
+proposed lines, then submits all ready comments together for evaluation. Later
+debugging and implementation missions will provide editable code and tests,
+because modifying code is a different skill from reviewing it.
+
+## Heroic Operations UI
+
+The frontend has a small design system of CSS custom properties (variables).
+Names such as `--hq-gold` and `--review-paper` describe a role rather than one
+screen, so the same rule can safely serve welcome, onboarding, and feedback.
+Changing `data-theme` on the document switches those values between light and
+dark themes; the selected theme is stored in browser local storage.
+
+`OperationsShell` is a shared React wrapper for non-code screens. It provides
+the original comic-book Supply HQ background, truthful active-objective HUD, and
+theme control. `MiloMessenger` is the lower-right guide popup. Browser security
+requires a user interaction before audio can play, so its visual alert always
+works and the gentle Web Audio chime is attempted only after a new learner
+action. Learners can mute it, and CSS disables non-essential motion when the
+operating system requests reduced motion.
+
+The map-room and Milo images in `client/public/assets/` are original
+project-owned generated artwork. They deliberately stay outside the neutral PR
+diff surface: code uses compact monospace type, line numbers, and conventional
+added/removed colors because readability wins during an engineering task. The
+small `JavaCodeLine` component adds only basic keyword, string, comment, and
+number color—not a full editor dependency—so learners get IDE-like scanning
+help without hiding how the diff itself works.
+
+Review findings can also carry a scenario-author-written `recommended_code`
+snippet. Flyway stores it with the deterministic finding, Spring exposes it in
+feedback, and the debrief places it beside the exact submitted lines. The panels
+start compact for scanning, but a learner can enlarge a comparison when studying
+it. This keeps teaching examples concrete without asking the browser or an AI model to invent
+a correction.
+
 ## Current Structure
 
 ```text
@@ -123,7 +183,7 @@ Manual path for the first learner flow:
 2. Run the API with `.\gradlew.bat bootRun` from `server/`. Confirm the logs
    show Flyway applying V1 and V2, then `Started DevlairApiApplication`.
 3. Run `npm run dev` from `client/` and open http://localhost:5173.
-4. Create an account, walk through Juno’s tour, open PR #184.
+4. Create an account, walk through Milo’s tour, open PR #184.
 5. Comment on the new `getOrderDetails` method (proposed lines 13–15 in
    `OrderService.java`) about missing customer scope.
 6. Submit. Feedback should list that HIGH finding as found and the test finding

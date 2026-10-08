@@ -162,3 +162,90 @@ Reason:
 This keeps frontend and backend debugging straightforward while providing a
 repeatable local database. Dockerfiles for the client and server can follow
 after the first end-to-end learning flow works.
+
+---
+
+## ADR-012 — Guided Onboarding, Familiar Review Workspace
+
+Decision:
+
+Use a two-mode interface. First-run onboarding uses Milo's scripted chat and
+guided spotlights to explain the product, simulated company, and relevant
+codebase. Each new capability follows a focused context → practice → debrief
+section rather than extending one uninterrupted tutorial. The pull-request
+review workspace uses familiar developer-tool patterns: a PR header, truthful
+tabs, unified diffs, inline comments, and review submission.
+
+Reason:
+
+The tutorial should lower the entry barrier and make the fictional company feel
+alive. The actual review work should remain credible and recognizable to
+developers without copying GitHub branding or visual trade dress.
+
+---
+
+## ADR-014 — Keep PR Review and Code-Fix Practice Separate
+
+Decision:
+
+The PR Review Trainer asks learners to inspect proposed code and leave review
+comments; it does not offer direct code editing. Future debugging or
+implementation missions will give learners a failing system, editable code,
+tests, and a verification step.
+
+Reason:
+
+Code review and implementation are distinct engineering skills. Keeping the
+first mission focused makes the expected action clear and lets later exercises
+teach safe code changes and test-driven verification properly.
+
+---
+
+## ADR-013 — Milo as an Optional Popup Guide
+
+Decision:
+
+Use Milo Vale, a warm and slightly goofy operations guide, in a compact
+lower-right popup rather than a permanent side panel.
+New messages will use a subtle visual notification and an optional sound. The
+guide must be dismissible, must not cover code or review controls, and must
+respect reduced-motion and muted-sound preferences.
+
+Reason:
+
+The tutorial should feel alive without reducing the working space needed for
+code review. Optional, accessible notifications preserve learner control.
+
+---
+
+## ADR-015 — Comic-Book Supply HQ Presentation
+
+Decision:
+
+Non-code screens use original 2D comic-book Supply HQ art: a scrappy B-tier
+hero-equipment subsidiary with warm city-view mission control. Code review
+surfaces remain neutral and developer-tool-like for readability.
+
+Reason:
+
+The world needs a memorable, ownable personality without compromising the
+realistic review practice that is DevLair's core learning activity.
+
+---
+
+## ADR-016 - Separate Learning and Assessment Modes
+
+Decision:
+
+DevLair's initial and primary product is a learner-facing engineering simulator.
+It may later add a separate employer assessment mode, but it must not mix
+tutorial guidance, corrected-code feedback, or game-style interruptions into a
+timed or scored assessment.
+
+Reason:
+
+Learning benefits from a welcoming world, retries, and explanations. Hiring
+assessment needs standardized conditions, neutral presentation, accessible
+workflows, and trustworthy scoring. Treating these as separate modes protects
+both goals and avoids building assessment infrastructure before the learning
+product is proven.

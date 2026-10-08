@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { OperationsShell } from '../components/OperationsShell'
 
 type AuthViewProps = {
   mode: 'register' | 'login'
@@ -11,24 +12,32 @@ type AuthViewProps = {
 export function AuthView({ mode, error, pending, onSubmit, onBack }: AuthViewProps) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string }>({})
   const isRegister = mode === 'register'
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    const errors = validate(email, password)
+    setFieldErrors(errors)
+    if (Object.keys(errors).length > 0) return
     await onSubmit(email, password)
   }
 
+  function validateEmail(value: string) { setFieldErrors((current) => ({ ...current, email: validate(value, password).email })) }
+  function validatePassword(value: string) { setFieldErrors((current) => ({ ...current, password: validate(email, value).password })) }
+
   return (
-    <main className="welcome-shell">
+    <OperationsShell mission={isRegister ? 'Create your crew badge' : 'Return to operations'} status="Secure dispatch">
+      <section className="welcome-shell">
       <section className="welcome-card" aria-labelledby="auth-title">
         <p className="eyebrow">Sidekick Supply Co.</p>
         <h1 id="auth-title">{isRegister ? 'Create your badge' : 'Sign back in'}</h1>
         <p className="intro">
           {isRegister
-            ? 'Juno needs an account so your onboarding and reviews stay attached to you.'
+            ? 'Milo needs an account so your onboarding and reviews stay attached to you.'
             : 'Use the email and password you registered with.'}
         </p>
-        <form className="auth-form" onSubmit={handleSubmit}>
+      <form className="auth-form" noValidate onSubmit={handleSubmit}>
           <label>
             Email
             <input
@@ -38,7 +47,11 @@ export function AuthView({ mode, error, pending, onSubmit, onBack }: AuthViewPro
               required
               value={email}
               onChange={(event) => setEmail(event.target.value)}
+              onBlur={(event) => validateEmail(event.target.value)}
+              aria-invalid={Boolean(fieldErrors.email)}
+              aria-describedby={fieldErrors.email ? 'email-error' : undefined}
             />
+            {fieldErrors.email ? <span className="field-error" id="email-error" role="alert">{fieldErrors.email}</span> : null}
           </label>
           <label>
             Password
@@ -51,7 +64,11 @@ export function AuthView({ mode, error, pending, onSubmit, onBack }: AuthViewPro
               required
               value={password}
               onChange={(event) => setPassword(event.target.value)}
+              onBlur={(event) => validatePassword(event.target.value)}
+              aria-invalid={Boolean(fieldErrors.password)}
+              aria-describedby={fieldErrors.password ? 'password-error' : undefined}
             />
+            {fieldErrors.password ? <span className="field-error" id="password-error" role="alert">{fieldErrors.password}</span> : null}
           </label>
           {error ? (
             <p className="form-error" role="alert">
@@ -68,6 +85,18 @@ export function AuthView({ mode, error, pending, onSubmit, onBack }: AuthViewPro
           </div>
         </form>
       </section>
-    </main>
+      </section>
+    </OperationsShell>
   )
+}
+
+function validate(email: string, password: string) {
+  const errors: { email?: string; password?: string } = {}
+  const normalizedEmail = email.trim()
+  if (!normalizedEmail) errors.email = 'Enter your email address so Milo can find your engineering badge.'
+  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) errors.email = 'Enter an email address in the format name@example.com.'
+  if (!password) errors.password = 'Choose a password for your account.'
+  else if (password.length < 8) errors.password = 'Your password needs at least 8 characters.'
+  else if (password.length > 72) errors.password = 'Your password must be 72 characters or fewer.'
+  return errors
 }

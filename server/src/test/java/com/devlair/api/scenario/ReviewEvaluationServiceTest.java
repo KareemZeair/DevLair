@@ -26,6 +26,6 @@ class ReviewEvaluationServiceTest {
     }
 
     private static ReviewFinding finding(String path, int start, int end, String title) {
-        return new ReviewFinding(UUID.randomUUID(), path, start, end, "HIGH", title, "explanation");
+        return new ReviewFinding(UUID.randomUUID(), path, start, end, "HIGH", title, "explanation", "fixed code");
     }
 }

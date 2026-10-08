@@ -153,6 +153,53 @@ Target roughly:
 
 ---
 
+## Product Modes
+
+DevLair will eventually support two separate product modes.
+
+- **Learning mode** is the primary product. It uses the Sidekick Supply Co.
+  world, Milo, contextual guidance, retryable practice, and detailed teaching
+  feedback to help an individual developer build practical engineering skill.
+- **Assessment mode** is a future employer-facing product. It will use neutral
+  presentation, standardized scenarios and scoring, time controls, accessible
+  candidate workflows, and integrity safeguards. It must not expose learning
+  hints or corrected code during an assessment.
+
+Assessment mode is not part of the MVP. DevLair should first prove that its
+learning scenarios are useful and engaging before attempting hiring signals.
+
+---
+
+## Learning Flow
+
+Each capability should use a short, repeatable learning loop:
+
+1. Milo explains the product context and the relevant part of the simulated
+   codebase.
+2. The learner completes a realistic engineering task without the tutorial
+   covering the work area.
+3. The platform gives a grounded debrief explaining what was found, missed, or
+   outside automatic assessment.
+4. When a new capability is introduced, Milo begins a new focused tutorial
+   section before the learner tries that activity.
+
+The onboarding is therefore not one giant lecture. It is a sequence of small
+context → practice → debrief sections as DevLair grows.
+
+For the PR Review Trainer, practice means writing review comments against
+proposed code. Editing code is deliberately out of scope for that activity.
+Direct code changes and test verification belong in future debugging and
+implementation-focused missions.
+
+## Fictional Company Direction
+
+Sidekick Supply Co. is a scrappy equipment-manufacturing subsidiary supporting
+the superhero league's B-tier heroes. It builds and maintains the practical,
+uncelebrated gear that lets those heroes do their jobs. The learner works on the
+engineering systems behind that operation; they are not a superhero.
+
+---
+
 ## Long-Term Roadmap
 
 1. PR Review Trainer

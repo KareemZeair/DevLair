@@ -182,6 +182,7 @@ export default function App() {
       pending={pending}
       onLogout={() => void handleLogout()}
       onSubmit={handleSubmit}
+      onReplayTour={() => setScreen('tour')}
     />
   )
 }

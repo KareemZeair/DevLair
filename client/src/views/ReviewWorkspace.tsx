@@ -1,170 +1,40 @@
 import { useMemo, useState } from 'react'
+import { JavaCodeLine } from '../components/JavaCodeLine'
+import { MiloMessenger } from '../components/MiloMessenger'
+import { ThemeToggle } from '../components/ThemeToggle'
 import type { DraftComment, ScenarioDetail, Session } from '../types'
 
-type ReviewWorkspaceProps = {
-  session: Session
-  scenario: ScenarioDetail
-  error: string | null
-  pending: boolean
-  onLogout: () => void
-  onSubmit: (comments: DraftComment[]) => Promise<void>
-}
+type ReviewWorkspaceProps = { session: Session; scenario: ScenarioDetail; error: string | null; pending: boolean; onLogout: () => void; onSubmit: (comments: DraftComment[]) => Promise<void>; onReplayTour: () => void }
 
-export function ReviewWorkspace({ session, scenario, error, pending, onLogout, onSubmit }: ReviewWorkspaceProps) {
+export function ReviewWorkspace({ session, scenario, error, pending, onLogout, onSubmit, onReplayTour }: ReviewWorkspaceProps) {
+  const [tab, setTab] = useState<'overview' | 'files'>('overview')
   const [activePath, setActivePath] = useState(scenario.files[0]?.path ?? '')
-  const [activeDoc, setActiveDoc] = useState(scenario.documents[0]?.type ?? '')
   const [comments, setComments] = useState<DraftComment[]>([])
   const activeFile = scenario.files.find((file) => file.path === activePath) ?? scenario.files[0]
-  const activeDocument = scenario.documents.find((document) => document.type === activeDoc) ?? scenario.documents[0]
-  const commentsOnFile = useMemo(
-    () => comments.filter((comment) => comment.filePath === activeFile?.path),
-    [comments, activeFile],
-  )
-
-  function startComment(lineNumber: number) {
-    if (!activeFile) {
-      return
-    }
-    setComments((current) => {
-      if (current.some((comment) => comment.filePath === activeFile.path && comment.lineNumber === lineNumber)) {
-        return current
-      }
-      return [...current, { filePath: activeFile.path, lineNumber, body: '' }]
-    })
-  }
-
-  function updateComment(lineNumber: number, body: string) {
-    if (!activeFile) {
-      return
-    }
-    setComments((current) =>
-      current.map((comment) =>
-        comment.filePath === activeFile.path && comment.lineNumber === lineNumber ? { ...comment, body } : comment,
-      ),
-    )
-  }
-
-  function removeComment(lineNumber: number) {
-    if (!activeFile) {
-      return
-    }
-    setComments((current) =>
-      current.filter((comment) => !(comment.filePath === activeFile.path && comment.lineNumber === lineNumber)),
-    )
-  }
-
+  const ticket = scenario.documents.find((document) => document.type === 'TICKET') ?? scenario.documents[0]
+  const architecture = scenario.documents.find((document) => document.type === 'ARCHITECTURE')
+  const commentsOnFile = useMemo(() => comments.filter((comment) => comment.filePath === activeFile?.path), [comments, activeFile])
   const readyComments = comments.filter((comment) => comment.body.trim().length > 0)
 
-  return (
-    <div className="workspace">
-      <header className="workspace-header">
-        <div>
-          <p className="eyebrow">Sidekick Supply Co. · Review</p>
-          <h1>{scenario.title}</h1>
-          <p className="signed-in">Signed in as {session.email}</p>
-        </div>
-        <button type="button" className="secondary" onClick={onLogout}>
-          Sign out
-        </button>
-      </header>
-      <div className="workspace-grid">
-        <aside className="file-nav">
-          <h2>Ticket & architecture</h2>
-          <ul>
-            {scenario.documents.map((document) => (
-              <li key={document.type}>
-                <button
-                  type="button"
-                  className={document.type === activeDocument?.type ? 'active' : undefined}
-                  onClick={() => setActiveDoc(document.type)}
-                >
-                  {document.title}
-                </button>
-              </li>
-            ))}
-          </ul>
-          <h2>Changed files</h2>
-          <ul>
-            {scenario.files.map((file) => (
-              <li key={file.path}>
-                <button
-                  type="button"
-                  className={file.path === activeFile?.path ? 'active' : undefined}
-                  onClick={() => setActivePath(file.path)}
-                >
-                  {file.path.split('/').slice(-1)[0]}
-                </button>
-              </li>
-            ))}
-          </ul>
-        </aside>
-        <section className="workspace-main">
-          {activeDocument ? (
-            <article className="doc-panel">
-              <h2>{activeDocument.title}</h2>
-              <p>{activeDocument.content}</p>
-            </article>
-          ) : null}
-          {activeFile ? (
-            <article className="diff-panel">
-              <h2>{activeFile.path}</h2>
-              <p className="hint">Click a proposed line number to leave a draft comment. Comments target the new file.</p>
-              <ol className="diff">
-                {activeFile.diff.map((line, index) => {
-                  const commentable = line.proposedLineNumber !== null
-                  const draft = commentsOnFile.find((comment) => comment.lineNumber === line.proposedLineNumber)
-                  return (
-                    <li key={`${line.type}-${index}`} className={`diff-line ${line.type.toLowerCase()}`}>
-                      <button
-                        type="button"
-                        className="line-gutter"
-                        disabled={!commentable}
-                        onClick={() => commentable && startComment(line.proposedLineNumber!)}
-                        aria-label={
-                          commentable
-                            ? `Comment on line ${line.proposedLineNumber}`
-                            : `Removed line ${line.originalLineNumber}`
-                        }
-                      >
-                        {line.proposedLineNumber ?? ''}
-                      </button>
-                      <pre>{line.text || ' '}</pre>
-                      {draft ? (
-                        <div className="draft-comment">
-                          <label>
-                            Comment on line {draft.lineNumber}
-                            <textarea
-                              value={draft.body}
-                              onChange={(event) => updateComment(draft.lineNumber, event.target.value)}
-                              rows={3}
-                            />
-                          </label>
-                          <button type="button" className="secondary" onClick={() => removeComment(draft.lineNumber)}>
-                            Remove
-                          </button>
-                        </div>
-                      ) : null}
-                    </li>
-                  )
-                })}
-              </ol>
-            </article>
-          ) : (
-            <p>This scenario has no files yet.</p>
-          )}
-          {error ? (
-            <p className="form-error" role="alert">
-              {error}
-            </p>
-          ) : null}
-          <div className="submit-bar">
-            <p>{readyComments.length} comment{readyComments.length === 1 ? '' : 's'} ready to submit.</p>
-            <button type="button" disabled={pending} onClick={() => void onSubmit(readyComments)}>
-              {pending ? 'Submitting…' : 'Submit review'}
-            </button>
-          </div>
-        </section>
-      </div>
-    </div>
-  )
+  function commentCount(path: string) { return comments.filter((comment) => comment.filePath === path && comment.body.trim()).length }
+  function startComment(lineNumber: number) { if (activeFile) setComments((items) => items.some((item) => item.filePath === activeFile.path && item.lineNumber === lineNumber) ? items : [...items, { filePath: activeFile.path, lineNumber, body: '' }]) }
+  function updateComment(lineNumber: number, body: string) { if (activeFile) setComments((items) => items.map((item) => item.filePath === activeFile.path && item.lineNumber === lineNumber ? { ...item, body } : item)) }
+  function removeComment(lineNumber: number) { if (activeFile) setComments((items) => items.filter((item) => !(item.filePath === activeFile.path && item.lineNumber === lineNumber))) }
+
+  return <main className="review-app">
+    <header className="review-topbar"><div className="repo-crumb"><strong>sidekick-supply</strong><span>/</span><strong>order-service</strong><span className="repo-lock" aria-label="Private repository">●</span></div><div className="review-user"><ThemeToggle />{session.email}<button type="button" onClick={onLogout}>Sign out</button></div></header>
+    <section className="pr-heading"><div><p className="pr-kicker">Pull request <span>Open</span></p><h1>{scenario.title} <em>#{scenario.slug === 'order-details-access' ? '184' : scenario.slug}</em></h1><p>Milo Vale wants to merge 1 commit into <code>main</code> from <code>feature/order-details</code></p></div><aside className="review-objective"><span>Active objective</span><strong>Protect customer equipment orders</strong><small>Review only · no code edits</small></aside></section>
+    <nav className="pr-tabs" aria-label="Pull request sections"><button className={tab === 'overview' ? 'active' : ''} type="button" onClick={() => setTab('overview')}>Overview</button><button className={tab === 'files' ? 'active' : ''} type="button" onClick={() => setTab('files')}>Files changed <span>{scenario.files.length}</span></button></nav>
+    <div className="review-layout"><section className="review-body">{tab === 'overview' ? <Overview ticket={ticket} architecture={architecture} summary={scenario.summary} /> : <FilesChanged files={scenario.files} activePath={activeFile?.path ?? ''} commentsOnFile={commentsOnFile} commentCount={commentCount} onSelect={setActivePath} activeFile={activeFile} onStartComment={startComment} onUpdateComment={updateComment} onRemoveComment={removeComment} />}</section><aside className="review-sidebar"><section className="review-summary"><h2>Ready to submit?</h2><p><strong>{readyComments.length}</strong> comment{readyComments.length === 1 ? '' : 's'} ready to send.</p><p className="summary-help">Writing a comment does not send it immediately. This button submits all ready comments as one review.</p>{error ? <p className="form-error" role="alert">{error}</p> : null}<button type="button" disabled={pending || readyComments.length === 0} onClick={() => void onSubmit(readyComments)}>{pending ? 'Submitting review…' : 'Submit review'}</button></section></aside></div>
+    <MiloMessenger heading={tab === 'overview' ? 'Start with the brief' : 'Review station online'} message={tab === 'overview' ? 'Read the ticket and the ownership rule first. They tell you what the changed code must protect.' : 'Click a blue line number to leave a comment. Name the risk and why it matters; perfect wording can wait.'} messageKey={`review-${tab}`} actionLabel="Replay orientation" onAction={onReplayTour} />
+  </main>
+}
+
+function Overview({ ticket, architecture, summary }: { ticket: ScenarioDetail['documents'][number] | undefined; architecture: ScenarioDetail['documents'][number] | undefined; summary: string }) {
+  return <section className="overview-grid"><article className="review-card"><h2>{ticket?.title ?? 'Mission brief'}</h2><p>{ticket?.content ?? summary}</p><h3>What you are doing here</h3><p>This is a code-review mission, not a coding task. Read the request, identify the system rule, then inspect whether the proposed change respects it. Your job is to leave useful review comments; you will not edit the code in this mission.</p></article><article className="review-card"><h2>{architecture?.title ?? 'Architecture context'}</h2><p>{architecture?.content ?? 'Customer-owned queries must include the signed-in customer.'}</p><div className="code-path"><span>HTTP request</span><b>→</b><span>Controller</span><b>→</b><span>Service</span><b>→</b><span>Repository</span></div></article></section>
+}
+
+type FilesChangedProps = { files: ScenarioDetail['files']; activePath: string; commentsOnFile: DraftComment[]; commentCount: (path: string) => number; onSelect: (path: string) => void; activeFile: ScenarioDetail['files'][number] | undefined; onStartComment: (line: number) => void; onUpdateComment: (line: number, body: string) => void; onRemoveComment: (line: number) => void }
+function FilesChanged({ files, activePath, commentsOnFile, commentCount, onSelect, activeFile, onStartComment, onUpdateComment, onRemoveComment }: FilesChangedProps) {
+  return <section className="files-layout"><aside className="changed-files"><div><strong>Changed files</strong><span>{files.length} files</span></div><ul>{files.map((file) => <li key={file.path}><button className={file.path === activePath ? 'active' : ''} type="button" onClick={() => onSelect(file.path)}><span className="file-status">M</span><span>{file.path.split('/').slice(-1)[0]}</span>{commentCount(file.path) > 0 ? <b>{commentCount(file.path)}</b> : null}</button></li>)}</ul></aside><section className="diff-stack"><section className="review-instructions" aria-label="How to complete this review"><span>How to review this pull request</span><ol><li>Read a changed line of code.</li><li>Click its blue line number to open a comment box.</li><li>Explain the risk and why it matters, then use <strong>Submit review</strong> when your comments are ready.</li></ol><p>You are reviewing the proposed code, not editing it. A future debugging mission will ask you to make and test a fix.</p></section>{activeFile ? <article className="diff-card"><header><code>{activeFile.path}</code><span>{commentsOnFile.filter((item) => item.body.trim()).length} comments</span></header><p className="diff-help"><strong>Click a blue line number</strong> to add a comment to that proposed line.</p><ol className="diff">{activeFile.diff.map((line, index) => { const canComment = line.proposedLineNumber !== null; const draft = commentsOnFile.find((item) => item.lineNumber === line.proposedLineNumber); return <li key={`${line.type}-${index}`} className={`diff-line ${line.type.toLowerCase()}`}><button type="button" className="line-gutter" disabled={!canComment} onClick={() => canComment && onStartComment(line.proposedLineNumber!)} aria-label={canComment ? `Add comment on line ${line.proposedLineNumber}` : `Removed line ${line.originalLineNumber}`}>{line.proposedLineNumber ?? ''}</button><pre><JavaCodeLine text={line.text || ' '} /></pre>{draft ? <div className="inline-comment"><label>Comment on line {draft.lineNumber}<textarea value={draft.body} rows={3} onChange={(event) => onUpdateComment(draft.lineNumber, event.target.value)} placeholder="Describe the concern and why it matters…" /></label><button type="button" onClick={() => onRemoveComment(draft.lineNumber)}>Discard</button></div> : null}</li> })}</ol></article> : null}</section></section>
 }

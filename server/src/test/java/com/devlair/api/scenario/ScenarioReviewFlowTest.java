@@ -77,7 +77,8 @@ class ScenarioReviewFlowTest {
                 4,
                 "HIGH",
                 "Lookup is not scoped to the customer",
-                "Pass the authenticated customer id."));
+                "Pass the authenticated customer id.",
+                "repository.findByIdAndCustomerId(orderId, customerId);"));
 
         mockMvc.perform(get("/api/scenarios").session(session))
                 .andExpect(status().isOk())

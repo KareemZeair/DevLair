@@ -32,7 +32,7 @@ public final class ScenarioApi {
     public record SubmitRequest(@NotNull @Valid List<CommentRequest> comments) {
     }
 
-    public record FindingFeedback(String filePath, int startLine, int endLine, String severity, String title, String explanation) {
+    public record FindingFeedback(String filePath, int startLine, int endLine, String severity, String title, String explanation, String recommendedCode) {
         static FindingFeedback from(ReviewFinding finding) {
             return new FindingFeedback(
                     finding.getFilePath(),
@@ -40,7 +40,8 @@ public final class ScenarioApi {
                     finding.getEndLine(),
                     finding.getSeverity(),
                     finding.getTitle(),
-                    finding.getExplanation());
+                    finding.getExplanation(),
+                    finding.getRecommendedCode());
         }
     }
 

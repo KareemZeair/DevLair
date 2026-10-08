@@ -1,0 +1,38 @@
+/* The report stays compact until a learner asks for a closer code comparison. */
+.feedback-card {
+  width: min(1080px, 100%);
+}
+
+.code-comparison pre {
+  max-height: 9rem;
+  overflow: auto;
+}
+
+.expand-code {
+  margin-top: .65rem;
+  border: 1px solid color-mix(in srgb, var(--hq-teal) 65%, transparent);
+  border-radius: .45rem;
+  padding: .4rem .65rem;
+  background: transparent;
+  color: var(--hq-teal);
+  font-size: .8rem;
+  font-weight: 800;
+}
+
+.finding-card.is-expanded {
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 18px 45px rgb(2 9 19 / 55%);
+}
+
+.finding-card.is-expanded .code-comparison pre {
+  min-height: 16rem;
+  max-height: 50vh;
+  font-size: .875rem;
+}
+
+@media (max-width: 570px) {
+  .finding-card.is-expanded .code-comparison pre {
+    min-height: 10rem;
+  }
+}

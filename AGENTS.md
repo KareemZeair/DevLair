@@ -109,6 +109,8 @@ the application parts work together, not receive opaque generated code.
 - Prefer incremental checkpoints with verification over large unexplained drops.
 - Record durable new development-process instructions and learning preferences
   in this section when they are given.
+- Warn the developer when a proposed feature risks prioritizing decoration,
+  gamification, or future-market work over the core learning experience.
 
 ## Important
 
