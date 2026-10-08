@@ -1,5 +1,11 @@
 # Roadmap
 
+## Current status
+
+Phase 1 is in progress. The first learner can register, complete Juno’s tour, open the seeded PR, leave line comments, and receive deterministic found/missed feedback. A full dashboard, extra scenarios, and app Dockerfiles are still later work.
+
+---
+
 ## Phase 1 — PR Review MVP
 
 Goal:

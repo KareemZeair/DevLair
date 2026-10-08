@@ -126,6 +126,30 @@ design and application persistence.
 
 ---
 
+## ADR-010 — Flyway PostgreSQL Database Module
+
+Decision:
+
+Keep Flyway as the schema owner, and add `flyway-database-postgresql` beside the Flyway starter.
+
+Reason:
+
+From Flyway 10 onward, PostgreSQL support is not inside `flyway-core`. Without the database module, Spring Boot 4 does not run migrations before Hibernate validates the schema, so the API fails with missing tables against an empty database.
+
+---
+
+## ADR-011 — Vite Dev Proxy for Same-Origin Sessions
+
+Decision:
+
+During local development, the React dev server proxies `/api` to Spring Boot on port 8080.
+
+Reason:
+
+Session cookies and CSRF cookies then belong to the same origin as the UI (`localhost:5173`). That avoids a CORS setup for the first learner flow. Dockerfiles for the client and server still wait until this flow works.
+
+---
+
 ## ADR-009 — Containerize PostgreSQL First
 
 Decision:

@@ -1,24 +1,197 @@
+import { useEffect, useState } from 'react'
+import { ApiError, completeOnboarding, ensureCsrfToken, getScenario, listScenarios, loadSession, login, logout, register, submitReview } from './api'
+import { AuthView } from './views/AuthView'
+import { FeedbackView } from './views/FeedbackView'
+import { ReviewWorkspace } from './views/ReviewWorkspace'
+import { TourView } from './views/TourView'
+import { WelcomeView } from './views/WelcomeView'
+import type { DraftComment, ReviewFeedback, ScenarioDetail, Session } from './types'
 import './App.css'
 
-function App() {
+type Screen = 'loading' | 'welcome' | 'register' | 'login' | 'tour' | 'review' | 'feedback'
+
+export default function App() {
+  const [screen, setScreen] = useState<Screen>('loading')
+  const [session, setSession] = useState<Session | null>(null)
+  const [scenario, setScenario] = useState<ScenarioDetail | null>(null)
+  const [feedback, setFeedback] = useState<ReviewFeedback | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [pending, setPending] = useState(false)
+
+  useEffect(() => {
+    void bootstrap()
+  }, [])
+
+  async function bootstrap() {
+    try {
+      await ensureCsrfToken()
+      const current = await loadSession()
+      if (!current) {
+        setScreen('welcome')
+        return
+      }
+      await enterAuthenticated(current)
+    } catch (cause) {
+      setError(messageFrom(cause))
+      setScreen('welcome')
+    }
+  }
+
+  async function enterAuthenticated(current: Session) {
+    setSession(current)
+    const detail = await loadAssignedScenario()
+    setScenario(detail)
+    setScreen(current.onboardingCompleted ? 'review' : 'tour')
+  }
+
+  async function loadAssignedScenario(): Promise<ScenarioDetail> {
+    const scenarios = await listScenarios()
+    const assigned = scenarios[0]
+    if (!assigned) {
+      throw new Error('No scenarios are seeded yet. Start Spring Boot against PostgreSQL so Flyway can load PR #184.')
+    }
+    return getScenario(assigned.slug)
+  }
+
+  async function handleRegister(email: string, password: string) {
+    setPending(true)
+    setError(null)
+    try {
+      await register(email, password)
+      const current = await login(email, password)
+      await enterAuthenticated(current)
+    } catch (cause) {
+      setError(messageFrom(cause))
+    } finally {
+      setPending(false)
+    }
+  }
+
+  async function handleLogin(email: string, password: string) {
+    setPending(true)
+    setError(null)
+    try {
+      const current = await login(email, password)
+      await enterAuthenticated(current)
+    } catch (cause) {
+      setError(messageFrom(cause))
+    } finally {
+      setPending(false)
+    }
+  }
+
+  async function handleCompleteOnboarding() {
+    setPending(true)
+    setError(null)
+    try {
+      const current = await completeOnboarding()
+      setSession(current)
+      setScreen('review')
+    } catch (cause) {
+      setError(messageFrom(cause))
+    } finally {
+      setPending(false)
+    }
+  }
+
+  async function handleSubmit(comments: DraftComment[]) {
+    if (!scenario) {
+      return
+    }
+    setPending(true)
+    setError(null)
+    try {
+      const result = await submitReview(scenario.slug, comments)
+      setFeedback(result)
+      setScreen('feedback')
+    } catch (cause) {
+      setError(messageFrom(cause))
+    } finally {
+      setPending(false)
+    }
+  }
+
+  async function handleLogout() {
+    await logout().catch(() => undefined)
+    setSession(null)
+    setScenario(null)
+    setFeedback(null)
+    setError(null)
+    setScreen('welcome')
+  }
+
+  if (screen === 'loading') {
+    return (
+      <main className="welcome-shell">
+        <p>Loading session…</p>
+      </main>
+    )
+  }
+
+  if (screen === 'welcome') {
+    return <WelcomeView onRegister={() => setScreen('register')} onLogin={() => setScreen('login')} />
+  }
+
+  if (screen === 'register' || screen === 'login') {
+    return (
+      <AuthView
+        mode={screen}
+        error={error}
+        pending={pending}
+        onSubmit={screen === 'register' ? handleRegister : handleLogin}
+        onBack={() => {
+          setError(null)
+          setScreen('welcome')
+        }}
+      />
+    )
+  }
+
+  if (!session || !scenario) {
+    return (
+      <main className="welcome-shell">
+        <p className="form-error">{error ?? 'The assignment could not be loaded.'}</p>
+        <button type="button" onClick={() => setScreen('welcome')}>
+          Back
+        </button>
+      </main>
+    )
+  }
+
+  if (screen === 'tour') {
+    return (
+      <TourView
+        session={session}
+        scenario={scenario}
+        error={error}
+        pending={pending}
+        onComplete={handleCompleteOnboarding}
+      />
+    )
+  }
+
+  if (screen === 'feedback' && feedback) {
+    return <FeedbackView scenario={scenario} feedback={feedback} onReviewAgain={() => setScreen('review')} />
+  }
+
   return (
-    <main className="welcome-shell">
-      <section className="welcome-card" aria-labelledby="welcome-title">
-        <p className="eyebrow">Sidekick Supply Co. · Engineering</p>
-        <div className="juno-avatar" aria-hidden="true">J</div>
-        <p className="guide-name">Juno · Junior Field Tester</p>
-        <h1 id="welcome-title">Welcome to the team.</h1>
-        <p className="intro">We build dependable gear for people who run toward trouble. Your job is to make sure the software behind every order is just as dependable.</p>
-        <div className="assignment-preview">
-          <span className="assignment-label">Your first assignment</span>
-          <strong>PR #184: Add order details for customers</strong>
-          <p>Review a small change before the mobile team ships it.</p>
-        </div>
-        <button type="button">Begin onboarding</button>
-        <p className="foundation-note">Account creation and the guided tour are next.</p>
-      </section>
-    </main>
+    <ReviewWorkspace
+      session={session}
+      scenario={scenario}
+      error={error}
+      pending={pending}
+      onLogout={() => void handleLogout()}
+      onSubmit={handleSubmit}
+    />
   )
 }
 
-export default App
+function messageFrom(cause: unknown): string {
+  if (cause instanceof ApiError) {
+    return cause.message
+  }
+  if (cause instanceof Error) {
+    return cause.message
+  }
+  return 'Something went wrong.'
+}

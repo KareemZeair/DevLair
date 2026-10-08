@@ -44,4 +44,18 @@ public class LearnerUser {
     public String getPasswordHash() {
         return passwordHash;
     }
+
+    public Instant getOnboardingCompletedAt() {
+        return onboardingCompletedAt;
+    }
+
+    public boolean isOnboardingCompleted() {
+        return onboardingCompletedAt != null;
+    }
+
+    public void completeOnboarding(Instant completedAt) {
+        if (this.onboardingCompletedAt == null) {
+            this.onboardingCompletedAt = completedAt;
+        }
+    }
 }
