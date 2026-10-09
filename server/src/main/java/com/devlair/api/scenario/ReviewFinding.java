@@ -39,6 +39,9 @@ public class ReviewFinding {
     @Column(name = "recommended_code", columnDefinition = "TEXT")
     private String recommendedCode;
 
+    @Column(name = "skill_key", nullable = false)
+    private String skillKey;
+
     protected ReviewFinding() {
     }
 
@@ -51,6 +54,7 @@ public class ReviewFinding {
         this.title = title;
         this.explanation = explanation;
         this.recommendedCode = recommendedCode;
+        this.skillKey = "review-judgment";
     }
 
     public String getFilePath() {
@@ -80,4 +84,6 @@ public class ReviewFinding {
     public String getRecommendedCode() {
         return recommendedCode;
     }
+
+    public String getSkillKey() { return skillKey; }
 }

@@ -14,6 +14,19 @@ public final class ScenarioApi {
     public record Summary(String slug, String title, String summary) {
     }
 
+    public record Task(String slug, String title, String summary, String workType, String difficulty,
+                          String companyArea, List<String> skills, String status, int attempts, int bestScore) {
+    }
+
+    public record SkillEvidence(String skillKey, int bestScore, int completedTasks) {
+    }
+
+    public record InboxNotice(String title, String message) {
+    }
+
+    public record Workspace(List<Task> tasks, List<SkillEvidence> skills, List<InboxNotice> inbox) {
+    }
+
     public record Document(String type, String title, String content) {
     }
 
@@ -23,7 +36,12 @@ public final class ScenarioApi {
     public record FileContent(String path, String originalContent, String proposedContent, List<DiffLine> diff) {
     }
 
-    public record Detail(String slug, String title, String summary, List<Document> documents, List<FileContent> files) {
+    public record ContextFile(String path, String content) { }
+    public record PullRequestDescription(String problem, String solution, String testing) { }
+    public record Hint(int order, String title, String content) { }
+
+    public record Detail(String slug, String title, String summary, PullRequestDescription pullRequestDescription,
+                         List<Document> documents, List<FileContent> files, List<ContextFile> contextFiles, List<Hint> hints) {
     }
 
     public record CommentRequest(@NotBlank String filePath, @Min(1) int lineNumber, @NotBlank String body) {

@@ -5,7 +5,7 @@ accidentally contradict earlier decisions.
 
 ---
 
-## ADR-001 — Start with Java/Spring
+## ADR-001 - Start with Java/Spring
 
 Decision:
 
@@ -20,7 +20,7 @@ Future stacks can be added later.
 
 ---
 
-## ADR-002 — One Company First
+## ADR-002 - One Company First
 
 Decision:
 
@@ -33,7 +33,7 @@ eventually become a persistent simulation.
 
 ---
 
-## ADR-003 — Deterministic Ground Truth
+## ADR-003 - Deterministic Ground Truth
 
 Decision:
 
@@ -49,7 +49,7 @@ The platform needs reliable evaluation.
 
 ---
 
-## ADR-004 — AI Behind the Scenes Initially
+## ADR-004 - AI Behind the Scenes Initially
 
 Decision:
 
@@ -68,7 +68,7 @@ AI can generate code, but engineers must be able to judge it.
 
 ---
 
-## ADR-005 — Realism Over Gamification
+## ADR-005 - Realism Over Gamification
 
 Decision:
 
@@ -78,7 +78,7 @@ Target approximately 80% professional simulation and 20% gamification.
 
 ---
 
-## ADR-006 — Avoid Premature Microservices
+## ADR-006 - Avoid Premature Microservices
 
 Decision:
 
@@ -89,7 +89,7 @@ introduce distributed-system complexity without a learning reason.
 
 ---
 
-## ADR-007 — Small Vertical Slices
+## ADR-007 - Small Vertical Slices
 
 Decision:
 
@@ -109,7 +109,7 @@ rather than building the entire backend before the frontend.
 
 ---
 
-## ADR-008 — PostgreSQL Schema with Flyway, Application Data with JPA
+## ADR-008 - PostgreSQL Schema with Flyway, Application Data with JPA
 
 Decision:
 
@@ -126,7 +126,7 @@ design and application persistence.
 
 ---
 
-## ADR-010 — Flyway PostgreSQL Database Module
+## ADR-010 - Flyway PostgreSQL Database Module
 
 Decision:
 
@@ -138,7 +138,7 @@ From Flyway 10 onward, PostgreSQL support is not inside `flyway-core`. Without t
 
 ---
 
-## ADR-011 — Vite Dev Proxy for Same-Origin Sessions
+## ADR-011 - Vite Dev Proxy for Same-Origin Sessions
 
 Decision:
 
@@ -150,7 +150,7 @@ Session cookies and CSRF cookies then belong to the same origin as the UI (`loca
 
 ---
 
-## ADR-009 — Containerize PostgreSQL First
+## ADR-009 - Containerize PostgreSQL First
 
 Decision:
 
@@ -165,11 +165,11 @@ after the first end-to-end learning flow works.
 
 ---
 
-## ADR-012 — Guided Onboarding, Familiar Review Workspace
+## ADR-012 - Guided Onboarding, Familiar Review Workspace
 
 Decision:
 
-Use a two-mode interface. First-run onboarding uses Milo's scripted chat and
+Use a two-mode interface. First-run onboarding uses Kilo's scripted chat and
 guided spotlights to explain the product, simulated company, and relevant
 codebase. Each new capability follows a focused context → practice → debrief
 section rather than extending one uninterrupted tutorial. The pull-request
@@ -184,13 +184,13 @@ developers without copying GitHub branding or visual trade dress.
 
 ---
 
-## ADR-014 — Keep PR Review and Code-Fix Practice Separate
+## ADR-014 - Keep PR Review and Code-Fix Practice Separate
 
 Decision:
 
 The PR Review Trainer asks learners to inspect proposed code and leave review
 comments; it does not offer direct code editing. Future debugging or
-implementation missions will give learners a failing system, editable code,
+implementation tasks will give learners a failing system, editable code,
 tests, and a verification step.
 
 Reason:
@@ -201,11 +201,11 @@ teach safe code changes and test-driven verification properly.
 
 ---
 
-## ADR-013 — Milo as an Optional Popup Guide
+## ADR-013 - Kilo as an Optional Senior-Developer Guide
 
 Decision:
 
-Use Milo Vale, a warm and slightly goofy operations guide, in a compact
+Use Kilo Vale, a warm and slightly goofy senior developer, in a compact
 lower-right popup rather than a permanent side panel.
 New messages will use a subtle visual notification and an optional sound. The
 guide must be dismissible, must not cover code or review controls, and must
@@ -218,12 +218,12 @@ code review. Optional, accessible notifications preserve learner control.
 
 ---
 
-## ADR-015 — Comic-Book Supply HQ Presentation
+## ADR-015 - Comic-Book Supply HQ Presentation
 
 Decision:
 
 Non-code screens use original 2D comic-book Supply HQ art: a scrappy B-tier
-hero-equipment subsidiary with warm city-view mission control. Code review
+hero-equipment subsidiary with warm city-view engineering offices. Code review
 surfaces remain neutral and developer-tool-like for readability.
 
 Reason:
@@ -249,3 +249,59 @@ assessment needs standardized conditions, neutral presentation, accessible
 workflows, and trustworthy scoring. Treating these as separate modes protects
 both goals and avoids building assessment infrastructure before the learning
 product is proven.
+
+---
+
+## ADR-017 - Workplace Tasks Use Deterministic Skill Evidence
+
+Decision:
+
+Learning mode uses Home, Work, Progress, and Profile as its
+four global destinations. Completed reviews persist a best per-scenario skill
+result derived from prepared deterministic findings. The result is displayed
+as learning evidence, not a rank or employability score.
+
+Reason:
+
+The learner needs a simple home and a visible record of practice now. A
+leaderboard or universal rating would imply a level of calibration that two
+pull request tasks cannot support. Tickets and pull requests remain task
+artifacts so navigation stays compact and the product remains learning-first.
+
+---
+
+## ADR-018 - Progressive Help and Read-Only Codebase Context
+
+Decision:
+
+Foundation onboarding may explain the first workflow directly. Later review
+tasks use learner-opened progressive hints and a read-only codebase explorer.
+PR descriptions contain Problem, Solution, and Testing sections. Supporting
+files are visible as context but cannot receive review comments.
+
+Reason:
+
+Learners need room to investigate independently, while optional support keeps
+practice approachable. Separating context from changed files preserves the
+realistic review action and avoids pretending the learner can review unchanged
+code as part of the pull request.
+
+---
+
+## ADR-019 - Work PC Shell Around Real Learning Tools
+
+Decision:
+
+After sign-in, learning mode opens as a Sidekick Supply Co. work PC. A single
+movable browser contains Today and GitGrub pull-request tabs. Its position,
+open state, and learner preferences remain local to the browser. Incident Desk
+and Supply Store are visible only as unavailable future tools until a focused
+learning activity needs them.
+
+Reason:
+
+The desktop makes the simulated workplace feel coherent while keeping the
+actual unit of practice a realistic task. Local persistence avoids backend
+schema and account-setting complexity. The product will measure starts,
+completions, intentional context use, and return for another task before
+expanding the desktop simulation.

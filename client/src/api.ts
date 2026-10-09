@@ -1,4 +1,4 @@
-import type { ReviewFeedback, ScenarioDetail, ScenarioSummary, Session } from './types'
+import type { ReviewFeedback, ScenarioDetail, ScenarioSummary, Session, WorkspaceData } from './types'
 
 export class ApiError extends Error {
   status: number
@@ -88,6 +88,10 @@ export function logout(): Promise<void> {
 
 export function listScenarios(): Promise<ScenarioSummary[]> {
   return request('/api/scenarios')
+}
+
+export function loadWorkspace(): Promise<WorkspaceData> {
+  return request('/api/workspace')
 }
 
 export function getScenario(slug: string): Promise<ScenarioDetail> {

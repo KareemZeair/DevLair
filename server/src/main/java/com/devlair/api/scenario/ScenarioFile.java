@@ -27,6 +27,9 @@ public class ScenarioFile {
     @Column(name = "proposed_content", nullable = false, columnDefinition = "TEXT")
     private String proposedContent;
 
+    @Column(name = "file_role", nullable = false)
+    private String fileRole;
+
     protected ScenarioFile() {
     }
 
@@ -35,6 +38,7 @@ public class ScenarioFile {
         this.path = path;
         this.originalContent = originalContent;
         this.proposedContent = proposedContent;
+        this.fileRole = "CHANGED";
     }
 
     public String getPath() {
@@ -48,4 +52,6 @@ public class ScenarioFile {
     public String getProposedContent() {
         return proposedContent;
     }
+
+    public String getFileRole() { return fileRole; }
 }

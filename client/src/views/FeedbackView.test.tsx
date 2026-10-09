@@ -7,6 +7,7 @@ const scenario: ScenarioDetail = {
   slug: 'order-details-access',
   title: 'PR #184: Add order details for customers',
   summary: 'Review the change.',
+  pullRequestDescription: null,
   documents: [],
   files: [{
     path: 'src/OrderService.java',
@@ -14,6 +15,8 @@ const scenario: ScenarioDetail = {
     proposedContent: Array.from({ length: 15 }, (_, index) => `submitted line ${index + 1}`).join('\n'),
     diff: [],
   }],
+  contextFiles: [],
+  hints: [],
 }
 
 const feedback: ReviewFeedback = {
@@ -44,8 +47,8 @@ const feedback: ReviewFeedback = {
 
 describe('FeedbackView', () => {
   it('separates found, missed, and unmatched comments', () => {
-    const onNextMission = vi.fn()
-    render(<FeedbackView scenario={scenario} feedback={feedback} onReviewAgain={() => undefined} onNextMission={onNextMission} nextMissionTitle="PR #211: Reject invalid replacement quantities" />)
+    const onNextTask = vi.fn()
+    render(<FeedbackView scenario={scenario} feedback={feedback} onReviewAgain={() => undefined} onNextTask={onNextTask} nextTaskTitle="PR #211: Reject invalid replacement quantities" />)
 
     expect(screen.getByText('Order lookup is not scoped to the authenticated customer')).toBeInTheDocument()
     expect(screen.getByText('The test does not prove customer ownership is enforced')).toBeInTheDocument()
@@ -54,8 +57,8 @@ describe('FeedbackView', () => {
     expect(screen.getAllByRole('table', { name: 'Suggested code correction' })).toHaveLength(2)
     fireEvent.click(screen.getAllByRole('button', { name: 'Enlarge code view' })[0])
     expect(screen.getByRole('button', { name: 'Use compact code view' })).toBeInTheDocument()
-    fireEvent.click(screen.getByRole('button', { name: /Start next mission/ }))
-    expect(onNextMission).toHaveBeenCalledOnce()
+    fireEvent.click(screen.getByRole('button', { name: /Open PR #211/ }))
+    expect(onNextTask).toHaveBeenCalledOnce()
     expect(screen.getByText('Other comments (1)')).toBeInTheDocument()
   })
 })

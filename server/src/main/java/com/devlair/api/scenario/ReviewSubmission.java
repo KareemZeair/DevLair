@@ -49,4 +49,7 @@ public class ReviewSubmission {
     public List<ReviewComment> getComments() {
         return comments;
     }
+
+    public UUID getScenarioId() { return scenarioId; }
+    public Instant getSubmittedAt() { return submittedAt; }
 }

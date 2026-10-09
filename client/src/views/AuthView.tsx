@@ -27,14 +27,14 @@ export function AuthView({ mode, error, pending, onSubmit, onBack }: AuthViewPro
   function validatePassword(value: string) { setFieldErrors((current) => ({ ...current, password: validate(email, value).password })) }
 
   return (
-    <OperationsShell mission={isRegister ? 'Create your crew badge' : 'Return to operations'} status="Secure dispatch">
+    <OperationsShell work={isRegister ? 'Create your account' : 'Return to the engineering team'} status="Secure sign in">
       <section className="welcome-shell">
       <section className="welcome-card" aria-labelledby="auth-title">
         <p className="eyebrow">Sidekick Supply Co.</p>
-        <h1 id="auth-title">{isRegister ? 'Create your badge' : 'Sign back in'}</h1>
+        <h1 id="auth-title">{isRegister ? 'Create your account' : 'Sign back in'}</h1>
         <p className="intro">
           {isRegister
-            ? 'Milo needs an account so your onboarding and reviews stay attached to you.'
+            ? 'Create an account so your onboarding, completed work, and feedback stay attached to you.'
             : 'Use the email and password you registered with.'}
         </p>
       <form className="auth-form" noValidate onSubmit={handleSubmit}>
@@ -93,7 +93,7 @@ export function AuthView({ mode, error, pending, onSubmit, onBack }: AuthViewPro
 function validate(email: string, password: string) {
   const errors: { email?: string; password?: string } = {}
   const normalizedEmail = email.trim()
-  if (!normalizedEmail) errors.email = 'Enter your email address so Milo can find your engineering badge.'
+  if (!normalizedEmail) errors.email = 'Enter your email address so we can save your engineering progress.'
   else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) errors.email = 'Enter an email address in the format name@example.com.'
   if (!password) errors.password = 'Choose a password for your account.'
   else if (password.length < 8) errors.password = 'Your password needs at least 8 characters.'

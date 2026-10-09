@@ -1,23 +1,10 @@
 import { useEffect, useState } from 'react'
+import { applyThemePreference, readThemePreference, type ThemePreference } from '../preferences'
 
-type Theme = 'light' | 'dark'
-const storageKey = 'devlair-theme'
-
-function preferredTheme(): Theme {
-  const saved = window.localStorage.getItem(storageKey)
-  if (saved === 'light' || saved === 'dark') return saved
-  return typeof window.matchMedia === 'function' && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-}
-
+// Onboarding sits outside the signed-in desktop, so it keeps one compact display control.
 export function ThemeToggle() {
-  const [theme, setTheme] = useState<Theme>(preferredTheme)
-
-  useEffect(() => {
-    document.documentElement.dataset.theme = theme
-    window.localStorage.setItem(storageKey, theme)
-  }, [theme])
-
-  return <button className="theme-toggle icon-button" type="button" onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')} aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} theme`}>
-    <span aria-hidden="true">{theme === 'light' ? '◐' : '☼'}</span><span>{theme === 'light' ? 'Night shift' : 'Day shift'}</span>
-  </button>
+  const [theme, setTheme] = useState<ThemePreference>(readThemePreference)
+  useEffect(() => { applyThemePreference(theme) }, [theme])
+  const next = theme === 'dark' ? 'light' : 'dark'
+  return <button className="theme-toggle icon-button" type="button" onClick={() => setTheme(next)} aria-label={`Switch to ${next} theme`}><span aria-hidden="true">{theme === 'dark' ? '☼' : '◐'}</span><span>{theme === 'dark' ? 'Day shift' : 'Night shift'}</span></button>
 }

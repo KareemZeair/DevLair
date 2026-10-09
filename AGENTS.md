@@ -111,6 +111,12 @@ the application parts work together, not receive opaque generated code.
   in this section when they are given.
 - Warn the developer when a proposed feature risks prioritizing decoration,
   gamification, or future-market work over the core learning experience.
+- Continue mentoring throughout the project. Explain the why behind important
+  choices and use small, verifiable checkpoints rather than opaque large drops.
+- Apply Lean Startup's build-measure-learn loop to product work: state the
+  learner problem and testable hypothesis, build the smallest useful slice,
+  identify a meaningful behavior or outcome to measure, then decide whether to
+  continue, adjust, or stop. Prefer learning metrics over vanity metrics.
 
 ## Important
 

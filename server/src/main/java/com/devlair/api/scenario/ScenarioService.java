@@ -17,6 +17,9 @@ public class ScenarioService {
     private final ReviewSubmissionRepository submissionRepository;
     private final LearnerUserRepository learnerUserRepository;
     private final ReviewEvaluationService reviewEvaluationService;
+    private final LearnerScenarioSkillEvidenceRepository evidenceRepository;
+    private final ScenarioPullRequestDescriptionRepository pullRequestDescriptionRepository;
+    private final ScenarioHintRepository hintRepository;
 
     public ScenarioService(
             ScenarioRepository scenarioRepository,
@@ -25,7 +28,8 @@ public class ScenarioService {
             ReviewFindingRepository findingRepository,
             ReviewSubmissionRepository submissionRepository,
             LearnerUserRepository learnerUserRepository,
-            ReviewEvaluationService reviewEvaluationService) {
+            ReviewEvaluationService reviewEvaluationService, LearnerScenarioSkillEvidenceRepository evidenceRepository,
+            ScenarioPullRequestDescriptionRepository pullRequestDescriptionRepository, ScenarioHintRepository hintRepository) {
         this.scenarioRepository = scenarioRepository;
         this.documentRepository = documentRepository;
         this.fileRepository = fileRepository;
@@ -33,6 +37,9 @@ public class ScenarioService {
         this.submissionRepository = submissionRepository;
         this.learnerUserRepository = learnerUserRepository;
         this.reviewEvaluationService = reviewEvaluationService;
+        this.evidenceRepository = evidenceRepository;
+        this.pullRequestDescriptionRepository = pullRequestDescriptionRepository;
+        this.hintRepository = hintRepository;
     }
 
     @Transactional(readOnly = true)
@@ -48,7 +55,8 @@ public class ScenarioService {
         List<ScenarioApi.Document> documents = documentRepository.findByScenarioIdOrderByDocumentTypeAsc(scenario.getId()).stream()
                 .map(document -> new ScenarioApi.Document(document.getDocumentType(), document.getTitle(), document.getContent()))
                 .toList();
-        List<ScenarioApi.FileContent> files = fileRepository.findByScenarioIdOrderByPathAsc(scenario.getId()).stream()
+        List<ScenarioFile> storedFiles = fileRepository.findByScenarioIdOrderByPathAsc(scenario.getId());
+        List<ScenarioApi.FileContent> files = storedFiles.stream().filter(file -> file.getFileRole().equals("CHANGED"))
                 .map(file -> new ScenarioApi.FileContent(
                         file.getPath(),
                         file.getOriginalContent(),
@@ -61,7 +69,13 @@ public class ScenarioService {
                                         line.text()))
                                 .toList()))
                 .toList();
-        return new ScenarioApi.Detail(scenario.getSlug(), scenario.getTitle(), scenario.getSummary(), documents, files);
+        List<ScenarioApi.ContextFile> contextFiles = storedFiles.stream().filter(file -> file.getFileRole().equals("CONTEXT"))
+                .map(file -> new ScenarioApi.ContextFile(file.getPath(), file.getProposedContent())).toList();
+        ScenarioApi.PullRequestDescription description = pullRequestDescriptionRepository.findByScenarioId(scenario.getId())
+                .map(value -> new ScenarioApi.PullRequestDescription(value.getProblem(), value.getSolution(), value.getTesting())).orElse(null);
+        List<ScenarioApi.Hint> hints = hintRepository.findByScenarioIdOrderByHintOrderAsc(scenario.getId()).stream()
+                .map(hint -> new ScenarioApi.Hint(hint.getHintOrder(), hint.getTitle(), hint.getContent())).toList();
+        return new ScenarioApi.Detail(scenario.getSlug(), scenario.getTitle(), scenario.getSummary(), description, documents, files, contextFiles, hints);
     }
 
     @Transactional
@@ -72,13 +86,31 @@ public class ScenarioService {
         for (ScenarioApi.CommentRequest comment : request.comments()) {
             submission.addComment(comment.filePath(), comment.lineNumber(), comment.body());
         }
-        submissionRepository.save(submission);
-
         List<ReviewFinding> findings = findingRepository.findByScenarioId(scenario.getId());
-        return reviewEvaluationService.evaluate(findings, request.comments());
+        ScenarioApi.ReviewFeedback feedback = reviewEvaluationService.evaluate(findings, request.comments());
+        submissionRepository.save(submission);
+        recordSkillEvidence(learner.getId(), scenario.getId(), findings, request.comments());
+        return feedback;
     }
 
     private Scenario requireScenario(String slug) {
         return scenarioRepository.findBySlug(slug).orElseThrow(() -> new ScenarioNotFoundException(slug));
+    }
+
+    private void recordSkillEvidence(java.util.UUID learnerId, java.util.UUID scenarioId, List<ReviewFinding> findings,
+            List<ScenarioApi.CommentRequest> comments) {
+        Instant now = Instant.now();
+        findings.stream().collect(java.util.stream.Collectors.groupingBy(ReviewFinding::getSkillKey)).forEach((skill, skillFindings) -> {
+            int found = (int) skillFindings.stream()
+                    .filter(finding -> comments.stream().anyMatch(comment -> ReviewEvaluationService.matches(finding, comment)))
+                    .count();
+            int score = (int) Math.round(found * 100.0 / skillFindings.size());
+            java.util.Optional<LearnerScenarioSkillEvidence> existing = evidenceRepository
+                    .findByLearnerUserIdAndScenarioIdAndSkillKey(learnerId, scenarioId, skill);
+            LearnerScenarioSkillEvidence evidence = existing
+                    .orElseGet(() -> new LearnerScenarioSkillEvidence(learnerId, scenarioId, skill, score, now));
+            existing.ifPresent(value -> value.recordAttempt(score, now));
+            evidenceRepository.save(evidence);
+        });
     }
 }

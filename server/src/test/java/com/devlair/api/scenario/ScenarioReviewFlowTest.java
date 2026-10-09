@@ -104,6 +104,13 @@ class ScenarioReviewFlowTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.found[0].title").value("Lookup is not scoped to the customer"))
                 .andExpect(jsonPath("$.missed").isEmpty());
+
+        mockMvc.perform(get("/api/workspace").session(session))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.tasks[0].status").value("COMPLETED"))
+                .andExpect(jsonPath("$.tasks[0].attempts").value(1))
+                .andExpect(jsonPath("$.skills[0].skillKey").value("review-judgment"))
+                .andExpect(jsonPath("$.skills[0].bestScore").value(100));
     }
 
     @Test

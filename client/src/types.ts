@@ -10,6 +10,30 @@ export type ScenarioSummary = {
   summary: string
 }
 
+export type Task = ScenarioSummary & {
+  workType: string
+  difficulty: string
+  companyArea: string
+  skills: string[]
+  status: 'AVAILABLE' | 'COMPLETED'
+  attempts: number
+  bestScore: number
+}
+
+export type SkillEvidence = {
+  skillKey: string
+  bestScore: number
+  completedTasks: number
+}
+
+export type InboxNotice = { title: string; message: string }
+
+export type WorkspaceData = {
+  tasks: Task[]
+  skills: SkillEvidence[]
+  inbox: InboxNotice[]
+}
+
 export type ScenarioDocument = {
   type: string
   title: string
@@ -30,12 +54,19 @@ export type ScenarioFile = {
   diff: DiffLine[]
 }
 
+export type ContextFile = { path: string; content: string }
+export type PullRequestDescription = { problem: string; solution: string; testing: string }
+export type ScenarioHint = { order: number; title: string; content: string }
+
 export type ScenarioDetail = {
   slug: string
   title: string
   summary: string
+  pullRequestDescription: PullRequestDescription | null
   documents: ScenarioDocument[]
   files: ScenarioFile[]
+  contextFiles: ContextFile[]
+  hints: ScenarioHint[]
 }
 
 export type DraftComment = {

@@ -24,6 +24,15 @@ public class Scenario {
     @Column(nullable = false, length = 500)
     private String summary;
 
+    @Column(name = "work_type", nullable = false)
+    private String workType;
+
+    @Column(nullable = false)
+    private String difficulty;
+
+    @Column(name = "company_area", nullable = false)
+    private String companyArea;
+
     protected Scenario() {
     }
 
@@ -31,6 +40,9 @@ public class Scenario {
         this.slug = slug;
         this.title = title;
         this.summary = summary;
+        this.workType = "PR_REVIEW";
+        this.difficulty = "FOUNDATION";
+        this.companyArea = "Order operations";
     }
 
     public UUID getId() {
@@ -48,4 +60,8 @@ public class Scenario {
     public String getSummary() {
         return summary;
     }
+
+    public String getWorkType() { return workType; }
+    public String getDifficulty() { return difficulty; }
+    public String getCompanyArea() { return companyArea; }
 }
