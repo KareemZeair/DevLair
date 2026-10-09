@@ -115,6 +115,28 @@ docker compose down
 between restarts. `docker compose down -v` also deletes that local data and is
 only appropriate when a fresh development database is wanted.
 
+### Start the Full Local App
+
+From the repository root, use one command to start the database, API, and
+browser application:
+
+```powershell
+.\start-dev.ps1
+```
+
+The launcher starts PostgreSQL through Docker Compose, the Spring Boot API on
+port 8080, and Vite on port 5173. It opens `http://localhost:5173` once both
+services are listening. It deliberately refuses to stop a process already using
+port 5173 or 8080, because that process may belong to another application. Its
+background logs are stored in the ignored `.devlair/` directory.
+
+If PowerShell blocks a locally checked-out script, run it for this session with:
+
+```powershell
+Set-ExecutionPolicy -Scope Process Bypass
+.\start-dev.ps1
+```
+
 ### Flyway and JPA
 
 Flyway migration files in `server/src/main/resources/db/migration` define the
@@ -166,12 +188,10 @@ compares them to those findings by file path and line range.
 ## Current Verification
 
 ```powershell
-docker compose up -d
+.\start-dev.ps1
 cd server; .\gradlew.bat test
-cd server; .\gradlew.bat bootRun
 cd client; npm test
 cd client; npm run build
-cd client; npm run dev
 ```
 
 Backend tests currently use an in-memory H2 database so they run without Docker.
@@ -179,10 +199,11 @@ Local development uses PostgreSQL.
 
 Manual path for the first learner flow:
 
-1. Start Docker Desktop, then `docker compose up -d`.
-2. Run the API with `.\gradlew.bat bootRun` from `server/`. Confirm the logs
-   show Flyway applying V1 and V2, then `Started DevlairApiApplication`.
-3. Run `npm run dev` from `client/` and open http://localhost:5173.
+1. Start Docker Desktop, then run `.\start-dev.ps1` from the repository root.
+   Confirm the script reports that DevLair is ready at http://localhost:5173.
+2. The launcher waits for the API to start. Its backend log should show Flyway
+   applying migrations, then `Started DevlairApiApplication`.
+3. Open http://localhost:5173 if the browser did not open automatically.
 4. Create an account, walk through Milo’s tour, open PR #184.
 5. Comment on the new `getOrderDetails` method (proposed lines 13–15 in
    `OrderService.java`) about missing customer scope.
