@@ -25,14 +25,13 @@ function FindingCard({ finding, scenario, state }: { finding: FindingFeedback; s
 
 function CodeComparison({ submittedCode, correctedCode, startLine }: { submittedCode: string; correctedCode: string | null; startLine: number }) {
   const submittedLines = codeLines(submittedCode, startLine)
-  const correctedLines = codeLines(correctedCode, 1)
-  const rowCount = Math.max(submittedLines.length, correctedLines.length, 1)
+  const correctedLines = codeLines(correctedCode, startLine)
 
-  return <section className="teaching-diff" aria-label="Code correction comparison"><header className="teaching-diff__header"><span>Submitted code</span><span>Corrected code</span></header><div className="teaching-diff__rows" role="table" aria-label="Submitted and corrected code"><span className="sr-only">The left column is submitted code. The right column is corrected replacement code.</span>{Array.from({ length: rowCount }, (_, index) => <div className="teaching-diff__row" role="row" key={index}><CodeCell line={submittedLines[index]} state="before" /><CodeCell line={correctedLines[index]} state="after" /></div>)}</div></section>
+  return <section className="teaching-diff" aria-label="Suggested code correction"><header className="teaching-diff__header"><strong>Suggested correction</strong><span>Remove the red lines, then add the green replacement.</span></header><div className="teaching-diff__rows" role="table" aria-label="Suggested code correction"><span className="sr-only">Red rows are submitted code to remove. Green rows are corrected replacement code to add.</span>{submittedLines.map((line) => <DiffLine line={line} state="removed" key={`removed-${line.number}`} />)}{correctedLines.length > 0 ? correctedLines.map((line) => <DiffLine line={line} state="added" key={`added-${line.number}`} />) : <p className="teaching-diff__missing">No corrected code was recorded.</p>}</div></section>
 }
 
-function CodeCell({ line, state }: { line: CodeLine | undefined; state: 'before' | 'after' }) {
-  return <div className={`teaching-diff__cell ${state}`} role="cell"><span className="teaching-diff__line-number">{line?.number ?? ''}</span><code>{line ? <JavaCodeLine text={line.text} /> : null}</code></div>
+function DiffLine({ line, state }: { line: CodeLine; state: 'removed' | 'added' }) {
+  return <div className={`teaching-diff__line ${state}`} role="row"><span className="teaching-diff__line-number">{line.number}</span><span className="teaching-diff__marker" aria-hidden="true">{state === 'removed' ? '-' : '+'}</span><code role="cell"><JavaCodeLine text={line.text} /></code></div>
 }
 
 type CodeLine = { number: number; text: string }

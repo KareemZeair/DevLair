@@ -19,7 +19,7 @@ remains the longer delivery sequence for the whole platform.
   optional notification sound. Respect reduced-motion preferences and provide a
   way to mute sound.
 - [x] Create bespoke, project-owned comic-book artwork for Milo and Supply HQ.
-- [x] Redesign the review-debrief code comparison as one resizable, side-by-side
-  diff surface. Align submitted and corrected lines with line numbers and clear
-  change highlighting, following familiar GitHub or IntelliJ review conventions
-  without copying their branding or exact layout.
+- [x] Redesign the review-debrief code comparison as one resizable unified diff.
+  Show submitted lines in red and corrected lines in green, following familiar
+  GitHub or IntelliJ review conventions without copying their branding or exact
+  layout.
