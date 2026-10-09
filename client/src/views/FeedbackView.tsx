@@ -20,11 +20,26 @@ function FindingCard({ finding, scenario, state }: { finding: FindingFeedback; s
   const [expanded, setExpanded] = useState(false)
   const file = scenario.files.find((candidate) => candidate.path === finding.filePath)
   const submittedCode = file?.proposedContent.split('\n').slice(finding.startLine - 1, finding.endLine).join('\n') ?? ''
-  return <article className={`finding-card ${state} ${expanded ? 'is-expanded' : ''}`}><header><span className="severity">{finding.severity}</span><strong>{finding.title}</strong><small>{shortPath(finding.filePath)} · lines {finding.startLine}-{finding.endLine}</small></header><p>{finding.explanation}</p><div className="code-comparison"><CodeSample label="Submitted" code={submittedCode} /><CodeSample label="Corrected code" code={finding.recommendedCode} /></div><button className="expand-code" type="button" onClick={() => setExpanded((current) => !current)} aria-expanded={expanded}>{expanded ? 'Use compact code view' : 'Enlarge code view'}</button></article>
+  return <article className={`finding-card ${state} ${expanded ? 'is-expanded' : ''}`}><header><span className="severity">{finding.severity}</span><strong>{finding.title}</strong><small>{shortPath(finding.filePath)} · lines {finding.startLine}-{finding.endLine}</small></header><p>{finding.explanation}</p><CodeComparison submittedCode={submittedCode} correctedCode={finding.recommendedCode} startLine={finding.startLine} /><button className="expand-code" type="button" onClick={() => setExpanded((current) => !current)} aria-expanded={expanded}>{expanded ? 'Use compact code view' : 'Enlarge code view'}</button></article>
 }
 
-function CodeSample({ label, code }: { label: string; code: string | null }) {
-  return <section><span>{label}</span><pre>{code ? code.split('\n').map((line, index) => <span className="code-sample-line" key={index}><JavaCodeLine text={line} /></span>) : 'No code sample recorded.'}</pre></section>
+function CodeComparison({ submittedCode, correctedCode, startLine }: { submittedCode: string; correctedCode: string | null; startLine: number }) {
+  const submittedLines = codeLines(submittedCode, startLine)
+  const correctedLines = codeLines(correctedCode, 1)
+  const rowCount = Math.max(submittedLines.length, correctedLines.length, 1)
+
+  return <section className="teaching-diff" aria-label="Code correction comparison"><header className="teaching-diff__header"><span>Submitted code</span><span>Corrected code</span></header><div className="teaching-diff__rows" role="table" aria-label="Submitted and corrected code"><span className="sr-only">The left column is submitted code. The right column is corrected replacement code.</span>{Array.from({ length: rowCount }, (_, index) => <div className="teaching-diff__row" role="row" key={index}><CodeCell line={submittedLines[index]} state="before" /><CodeCell line={correctedLines[index]} state="after" /></div>)}</div></section>
+}
+
+function CodeCell({ line, state }: { line: CodeLine | undefined; state: 'before' | 'after' }) {
+  return <div className={`teaching-diff__cell ${state}`} role="cell"><span className="teaching-diff__line-number">{line?.number ?? ''}</span><code>{line ? <JavaCodeLine text={line.text} /> : null}</code></div>
+}
+
+type CodeLine = { number: number; text: string }
+
+function codeLines(code: string | null, firstLineNumber: number): CodeLine[] {
+  if (!code) return []
+  return code.split('\n').map((text, index) => ({ number: firstLineNumber + index, text }))
 }
 
 function shortPath(path: string) { return path.split('/').slice(-1)[0] }

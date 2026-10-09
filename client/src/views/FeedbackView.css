@@ -3,9 +3,89 @@
   width: min(1080px, 100%);
 }
 
-.code-comparison pre {
-  max-height: 9rem;
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.teaching-diff {
+  min-height: 9rem;
+  max-height: 15rem;
+  resize: vertical;
   overflow: auto;
+  border: 1px solid #5d8fa766;
+  border-radius: .5rem;
+  background: #061527;
+}
+
+.teaching-diff__header,
+.teaching-diff__row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(18rem, 1fr));
+  min-width: 36rem;
+}
+
+.teaching-diff__header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  border-bottom: 1px solid #5d8fa766;
+  background: #102641;
+  color: var(--hq-gold);
+  font-size: .7rem;
+  font-weight: 900;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+}
+
+.teaching-diff__header span {
+  padding: .5rem .65rem;
+}
+
+.teaching-diff__header span + span,
+.teaching-diff__cell + .teaching-diff__cell {
+  border-left: 1px solid #5d8fa766;
+}
+
+.teaching-diff__row + .teaching-diff__row {
+  border-top: 1px solid #ffffff12;
+}
+
+.teaching-diff__cell {
+  display: grid;
+  grid-template-columns: 3rem minmax(0, 1fr);
+  min-height: 1.65rem;
+  font: 12px/1.55 "Cascadia Code", Consolas, monospace;
+}
+
+.teaching-diff__cell.before {
+  background: color-mix(in srgb, var(--hq-coral) 16%, transparent);
+}
+
+.teaching-diff__cell.after {
+  background: color-mix(in srgb, var(--hq-teal) 16%, transparent);
+}
+
+.teaching-diff__line-number {
+  padding: .15rem .45rem;
+  border-right: 1px solid #5d8fa766;
+  color: #9eb9d0;
+  text-align: right;
+  user-select: none;
+}
+
+.teaching-diff__cell code {
+  display: block;
+  padding: .15rem .65rem;
+  color: #eff8ff;
+  white-space: pre;
 }
 
 .expand-code {
@@ -25,14 +105,14 @@
   box-shadow: 0 18px 45px rgb(2 9 19 / 55%);
 }
 
-.finding-card.is-expanded .code-comparison pre {
-  min-height: 16rem;
-  max-height: 50vh;
+.finding-card.is-expanded .teaching-diff {
+  min-height: 18rem;
+  max-height: 55vh;
   font-size: .875rem;
 }
 
 @media (max-width: 570px) {
-  .finding-card.is-expanded .code-comparison pre {
+  .finding-card.is-expanded .teaching-diff {
     min-height: 10rem;
   }
 }

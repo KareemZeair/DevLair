@@ -50,6 +50,7 @@ describe('FeedbackView', () => {
     expect(screen.getByText('The test does not prove customer ownership is enforced')).toBeInTheDocument()
     expect(screen.getAllByText(/submitted line/)).toHaveLength(3)
     expect(screen.getAllByText('Corrected code')).toHaveLength(2)
+    expect(screen.getAllByRole('table', { name: 'Submitted and corrected code' })).toHaveLength(2)
     fireEvent.click(screen.getAllByRole('button', { name: 'Enlarge code view' })[0])
     expect(screen.getByRole('button', { name: 'Use compact code view' })).toBeInTheDocument()
     expect(screen.getByText('Other comments (1)')).toBeInTheDocument()

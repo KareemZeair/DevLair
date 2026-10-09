@@ -66,8 +66,10 @@ help without hiding how the diff itself works.
 Review findings can also carry a scenario-author-written `recommended_code`
 snippet. Flyway stores it with the deterministic finding, Spring exposes it in
 feedback, and the debrief places it beside the exact submitted lines. The panels
-start compact for scanning, but a learner can enlarge a comparison when studying
-it. This keeps teaching examples concrete without asking the browser or an AI model to invent
+start compact for scanning, but a learner can enlarge or vertically resize a
+single side-by-side comparison when studying it. Submitted and replacement code
+share aligned rows, with source line numbers on the left and replacement-snippet
+line numbers on the right. This keeps teaching examples concrete without asking the browser or an AI model to invent
 a correction.
 
 ## Current Structure
