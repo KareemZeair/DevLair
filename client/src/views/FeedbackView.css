@@ -1,6 +1,15 @@
 /* The report stays compact until a learner asks for a closer code comparison. */
-.feedback-card {
-  width: min(1080px, 100%);
+.welcome-card.feedback-card {
+  width: 100%;
+  max-width: 1120px;
+  padding: clamp(1.25rem, 3vw, 2.5rem);
+}
+
+@media (max-width: 720px) {
+  .welcome-card.feedback-card {
+    padding: 1.1rem;
+    border-radius: 14px;
+  }
 }
 
 .sr-only {
