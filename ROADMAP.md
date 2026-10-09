@@ -2,7 +2,10 @@
 
 ## Current status
 
-Phase 1 is in progress. The first learner can register, complete Milo’s tour, open the seeded PR, leave line comments, and receive deterministic found/missed feedback. A full dashboard, extra scenarios, and app Dockerfiles are still later work.
+Phase 1 is in progress. The first learner can register, complete Milo’s tour,
+review two seeded PR missions, leave line comments, and receive deterministic
+found/missed feedback. A full dashboard, more scenarios, and app Dockerfiles
+are still later work.
 
 The near-term interface-polish work is tracked in `TODO.md`, including bespoke
 Milo art, motion, dark mode, and the popup-guide direction.

@@ -5,7 +5,7 @@ import { FeedbackView } from './views/FeedbackView'
 import { ReviewWorkspace } from './views/ReviewWorkspace'
 import { TourView } from './views/TourView'
 import { WelcomeView } from './views/WelcomeView'
-import type { DraftComment, ReviewFeedback, ScenarioDetail, Session } from './types'
+import type { DraftComment, ReviewFeedback, ScenarioDetail, ScenarioSummary, Session } from './types'
 import './App.css'
 
 type Screen = 'loading' | 'welcome' | 'register' | 'login' | 'tour' | 'review' | 'feedback'
@@ -13,6 +13,7 @@ type Screen = 'loading' | 'welcome' | 'register' | 'login' | 'tour' | 'review' |
 export default function App() {
   const [screen, setScreen] = useState<Screen>('loading')
   const [session, setSession] = useState<Session | null>(null)
+  const [scenarios, setScenarios] = useState<ScenarioSummary[]>([])
   const [scenario, setScenario] = useState<ScenarioDetail | null>(null)
   const [feedback, setFeedback] = useState<ReviewFeedback | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -45,12 +46,32 @@ export default function App() {
   }
 
   async function loadAssignedScenario(): Promise<ScenarioDetail> {
-    const scenarios = await listScenarios()
-    const assigned = scenarios[0]
+    const availableScenarios = await listScenarios()
+    setScenarios(availableScenarios)
+    const assigned = availableScenarios[0]
     if (!assigned) {
       throw new Error('No scenarios are seeded yet. Start Spring Boot against PostgreSQL so Flyway can load PR #184.')
     }
     return getScenario(assigned.slug)
+  }
+
+  async function handleNextMission() {
+    if (!scenario) return
+    const currentIndex = scenarios.findIndex((candidate) => candidate.slug === scenario.slug)
+    const nextScenario = scenarios[currentIndex + 1]
+    if (!nextScenario) return
+
+    setPending(true)
+    setError(null)
+    try {
+      setScenario(await getScenario(nextScenario.slug))
+      setFeedback(null)
+      setScreen('review')
+    } catch (cause) {
+      setError(messageFrom(cause))
+    } finally {
+      setPending(false)
+    }
   }
 
   async function handleRegister(email: string, password: string) {
@@ -171,7 +192,9 @@ export default function App() {
   }
 
   if (screen === 'feedback' && feedback) {
-    return <FeedbackView scenario={scenario} feedback={feedback} onReviewAgain={() => setScreen('review')} />
+    const scenarioIndex = scenarios.findIndex((candidate) => candidate.slug === scenario.slug)
+    const nextScenario = scenarios[scenarioIndex + 1]
+    return <FeedbackView scenario={scenario} feedback={feedback} onReviewAgain={() => setScreen('review')} onNextMission={nextScenario ? () => void handleNextMission() : undefined} nextMissionTitle={nextScenario?.title} />
   }
 
   return (

@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from '@testing-library/react'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { FeedbackView } from './FeedbackView'
 import type { ReviewFeedback, ScenarioDetail } from '../types'
 
@@ -44,7 +44,8 @@ const feedback: ReviewFeedback = {
 
 describe('FeedbackView', () => {
   it('separates found, missed, and unmatched comments', () => {
-    render(<FeedbackView scenario={scenario} feedback={feedback} onReviewAgain={() => undefined} />)
+    const onNextMission = vi.fn()
+    render(<FeedbackView scenario={scenario} feedback={feedback} onReviewAgain={() => undefined} onNextMission={onNextMission} nextMissionTitle="PR #211: Reject invalid replacement quantities" />)
 
     expect(screen.getByText('Order lookup is not scoped to the authenticated customer')).toBeInTheDocument()
     expect(screen.getByText('The test does not prove customer ownership is enforced')).toBeInTheDocument()
@@ -53,6 +54,8 @@ describe('FeedbackView', () => {
     expect(screen.getAllByRole('table', { name: 'Suggested code correction' })).toHaveLength(2)
     fireEvent.click(screen.getAllByRole('button', { name: 'Enlarge code view' })[0])
     expect(screen.getByRole('button', { name: 'Use compact code view' })).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: /Start next mission/ }))
+    expect(onNextMission).toHaveBeenCalledOnce()
     expect(screen.getByText('Other comments (1)')).toBeInTheDocument()
   })
 })

@@ -72,6 +72,13 @@ marker, followed by green corrected code with a plus marker. This keeps teaching
 examples concrete without asking the browser or an AI model to invent
 a correction.
 
+The first two seeded missions deliberately teach different review skills in the
+same fictional Java codebase. PR #184 is about protecting customer-owned order
+data. PR #211 is about validating replacement quantities before inventory side
+effects happen and proving that guard with a negative-path test. After a debrief,
+the learner can start the next available mission. This is a small navigation step,
+not a dashboard or progression system.
+
 ## Current Structure
 
 ```text
