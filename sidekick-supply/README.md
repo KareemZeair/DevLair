@@ -34,3 +34,9 @@ defects, hidden tests, expected reasoning, and reference fixes must live in a
 separate private author repository or access-controlled environment. A local
 folder in this repository is not a security boundary and must not be described
 as one.
+
+## Learning plan
+
+Start with [LEARNING_PLAN.md](LEARNING_PLAN.md). It tells you where the code
+lives, how to run the baseline, and how to approach each two-week exercise
+without spoiling future scenario answers.
