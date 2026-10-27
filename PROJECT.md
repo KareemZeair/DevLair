@@ -243,6 +243,12 @@ Vale is their senior developer. Superhero details belong in company products,
 customers, and optional future easter eggs, not in the learner's role or core
 engineering terminology.
 
+The learner-visible commerce baseline lives in `sidekick-supply/` as a separate
+Spring modular monolith. It has a working catalog, cart, checkout, inventory
+reservation, simulated payment, and order flow. Keeping it separate from
+DevLair's own API prevents training-platform concerns from becoming tangled
+with Sidekick Supply business behavior.
+
 ---
 
 ## Long-Term Roadmap

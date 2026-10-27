@@ -1,0 +1,8 @@
+const customerId = 'learner-demo';
+const products = document.querySelector('#products'); const cart = document.querySelector('#cart'); const result = document.querySelector('#result');
+async function request(path, options) { const response = await fetch(path, options); const body = await response.json(); if (!response.ok) throw new Error(body.message || 'Request failed'); return body; }
+async function loadProducts() { const data = await request('/api/products'); products.innerHTML = data.map(p => `<article><b>${p.name}</b><span>$${p.unitPrice}</span><button data-sku="${p.sku}">Add to cart</button></article>`).join(''); products.querySelectorAll('button').forEach(button => button.onclick = () => add(button.dataset.sku)); }
+async function loadCart() { const data = await request(`/api/carts/${customerId}`); cart.textContent = data.items.length ? data.items.map(i => `${i.sku} × ${i.quantity}`).join(', ') : 'Your cart is empty.'; }
+async function add(sku) { try { await request(`/api/carts/${customerId}/items`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({sku, quantity:1})}); await loadCart(); } catch (error) { result.textContent = error.message; } }
+document.querySelector('#checkout').onclick = async () => { try { const order = await request('/api/checkout', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({customerId, paymentReference:'demo-card'})}); result.textContent = `Order ${order.orderNumber} created: $${order.total}.`; await loadCart(); } catch (error) { result.textContent = error.message; } };
+loadProducts(); loadCart();

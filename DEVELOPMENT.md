@@ -352,3 +352,23 @@ Manual path for the first learner flow:
    as missed unless you also commented on the test file around lines 10–19.
 
 Client and server Dockerfiles wait until this flow is solid.
+
+## Sidekick Supply Commerce Baseline
+
+`sidekick-supply/` is a separate Java/Spring modular-monolith application for
+the fictional company's real business behavior. DevLair's `server/` remains
+the learning platform API.
+
+The initial flow is catalog → cart → checkout → inventory reservation →
+simulated payment → order. Checkout owns one transaction boundary and locks an
+inventory row before calculating and applying a reservation. If simulated
+payment fails, the exception rolls the reservation and order creation back.
+
+Run it with the root Compose service and the existing checked-in Gradle wrapper:
+
+```powershell
+docker compose up -d sidekick-postgres
+cd sidekick-supply
+..\server\gradlew.bat test
+..\server\gradlew.bat bootRun --args='--server.port=8081'
+```

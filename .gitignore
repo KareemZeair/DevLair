@@ -2,3 +2,5 @@
 .devlair/
 .idea/
 *.iml
+**/.gradle/
+**/build/

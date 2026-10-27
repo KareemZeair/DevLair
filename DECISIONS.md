@@ -351,3 +351,24 @@ the existing review workflow without changing finding matching or the schema.
 
 Evaluation remains location-based. It identifies comments overlapping authored
 finding ranges; it does not yet assess the quality or meaning of the reasoning.
+
+---
+
+## ADR-022 - Separate the Sidekick Supply Baseline from the Learning Platform
+
+Decision:
+
+The runnable Sidekick Supply commerce application lives in `sidekick-supply/`.
+It is a package-organized modular monolith with catalog, cart, inventory,
+checkout, orders, and web boundaries. DevLair's existing `server/` remains the
+learning platform API.
+
+Reason:
+
+The company needs executable business behavior for realistic engineering work,
+but its product rules are not the same as scenario metadata, learner accounts,
+or feedback evaluation. A separate application lets future challenges inspect
+an authentic codebase without turning DevLair itself into an e-commerce system.
+This is a repository boundary, not security isolation: future hidden tests,
+solutions, and rubrics require a separate private author repository or
+access-controlled environment.

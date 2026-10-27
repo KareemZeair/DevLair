@@ -68,8 +68,8 @@ A developer can open a realistic PR and submit a code review.
 ### Deliberately deferred
 
 - Debugging and incident tasks, until their focused workspaces exist
-- A runnable storefront, until read-only context and a Core PR task show that
-  additional product interaction improves learning outcomes
+- Commerce capabilities beyond the validated Sidekick Supply core checkout
+  slice, until a concrete learning task needs them
 - Rank and leaderboard, until enough calibrated scenario data exists to make
   comparison fair
 
