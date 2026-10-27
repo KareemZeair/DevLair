@@ -25,12 +25,25 @@ remains the longer delivery sequence for the whole platform.
   layout.
 - [x] Add the simulated Sidekick Supply work PC with Today, GitGrub, local
   display and alert preferences, fullscreen, and a mobile fallback.
+- [x] Add the Personal Desk entry scene with local-time ambient lighting,
+  integrated company plaque, and Workstation entry.
+- [x] Close the Personal Desk polish with compact controls and a clearly
+  clickable monitor. Retire the cinemagraph; see `PERSONAL_DESK_MOTION.md`.
+- [ ] Visually recheck the final compact desk on desktop and mobile. The latest
+  Windows browser automation check was blocked by URL-policy support.
+- [ ] Add milestone-backed mementos to the Personal Desk once the achievement
+  criteria are supported by real product data.
 - [ ] Measure whether the work-PC shell improves task starts, completions,
   intentional context use, and return for another task before expanding the
   simulated tools.
 
 ## Learning loop
 
+- [x] Enforce review-comment targets on the server before saving attempts or
+  skill evidence. Cover invalid files, context files, cross-task targets,
+  nonexistent lines, empty reviews, and valid proposed-line boundaries.
+- [ ] Improve evaluation beyond comment-location overlap before claiming that
+  skill evidence measures the correctness of a learner's explanation.
 - [x] Add structured pull-request descriptions, optional progressive hints, and
   a read-only codebase explorer for PR-review investigation.
 - [x] Add an original static storefront preview to onboarding that explains the

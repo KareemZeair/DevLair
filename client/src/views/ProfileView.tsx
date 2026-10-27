@@ -1,10 +1,6 @@
-import type { WorkspaceData } from '../types'
+import type { Session, WorkspaceData } from '../types'
 
-type Decoration = { name: string; skill: string; description: string; glyph: string }
-const decorations: Decoration[] = [
-  { name: 'Security seal', skill: 'security', description: 'Earned by catching a strong security finding.', glyph: '◉' },
-  { name: 'Validation beacon', skill: 'validation', description: 'Earned by protecting a service boundary.', glyph: '✦' },
-  { name: 'Test bench card', skill: 'testing', description: 'Earned by recognizing missing proof in tests.', glyph: '▤' },
-]
-
-export function ProfileView({ data }: { data: WorkspaceData }) { const earned = new Set(data.skills.filter((skill) => skill.bestScore === 100).map((skill) => skill.skillKey)); return <section className="hq-page"><header className="hq-page__header"><p className="eyebrow">PERSONAL DESK</p><h1>A record of work well done.</h1><p>Decorations are earned mementos from meaningful learning milestones. There is no shop, currency, or gameplay advantage.</p></header><section className="desk-scene"><div className="desk-surface"><span className="desk-lamp" aria-hidden="true">◔</span>{decorations.map((decoration) => <article key={decoration.name} className={earned.has(decoration.skill) ? 'desk-decoration earned' : 'desk-decoration'}><span>{decoration.glyph}</span><strong>{decoration.name}</strong><small>{earned.has(decoration.skill) ? 'Earned' : decoration.description}</small></article>)}</div></section></section> }
+export function ProfileView({ data, session }: { data: WorkspaceData; session: Session }) {
+  const completed = data.tasks.filter((task) => task.status === 'COMPLETED').length
+  return <section className="team-map"><header className="team-map__header"><p className="eyebrow">ENGINEERING TEAM</p><h1>How the team fits together.</h1><p>This is a team map, not a leaderboard. Your position reflects your role in the simulated company, while skill evidence records the work you have practiced.</p></header><section className="org-chart" aria-label="Sidekick Supply engineering team"><article className="org-card org-card--lead"><span>ENGINEERING LEAD</span><strong>Rhea Park</strong><small>Sets product direction and delivery priorities.</small></article><div className="org-connector" aria-hidden="true" /><article className="org-card org-card--senior"><span>SENIOR DEVELOPER</span><strong>Kilo Vale</strong><small>Reviews designs and helps unblock the team.</small></article><div className="org-connector" aria-hidden="true" /><article className="org-card org-card--learner"><span>SOFTWARE DEVELOPER</span><strong>{session.email}</strong><small>{completed ? `${completed} completed task${completed === 1 ? '' : 's'} recorded` : 'Building your first evidence through practice'}</small></article></section><p className="team-map__note">Future calibrated ratings may add richer progression here. Until then, completed work and skill evidence are the honest signal.</p></section>
+}

@@ -305,3 +305,49 @@ actual unit of practice a realistic task. Local persistence avoids backend
 schema and account-setting complexity. The product will measure starts,
 completions, intentional context use, and return for another task before
 expanding the desktop simulation.
+
+---
+
+## ADR-020 - Personal Desk Before the Workstation
+
+Decision:
+
+After sign-in, the learner first sees their Personal Desk, then clicks its
+monitor to enter the Workstation. The Personal Desk uses original comic art
+with ambient local-time lighting. Cinemagraph work is discontinued in favor of
+the static illustration, compact controls, and clear monitor interaction. Both
+generic CSS shapes and the separately generated rotor overlay failed visual
+review and have been removed. Scene artwork,
+plaque lettering, and the monitor hotspot share the illustration's coordinates
+so resizing cannot move them independently. Generic overlays must not be placed
+over finished illustration as a substitute for preparing the scene.
+It presents the learner as a Software Developer through a company plaque and
+future Team Map, without displaying an invented rank.
+
+Reason:
+
+The Personal Desk gives the simulated company a memorable home without making
+the work tools less credible. Separating local time from the Day Shift and
+Night Shift application theme preserves learner readability preferences.
+
+---
+
+## ADR-021 - Validate Review Targets on the Server
+
+Decision:
+
+Before evaluating or saving a review, the server requires at least one non-null
+comment with a nonblank body. Each target must be a proposed line in a changed
+file belonging to the requested task. Unchanged supporting files and files from
+other tasks are not review targets. Blank proposed lines remain valid because
+the existing diff makes them available for comments.
+
+Reason:
+
+The browser's buttons cannot enforce an API rule. A caller can send HTTP
+requests without using the interface. Invalid reviews must return HTTP 400
+without recording an attempt, completion, or skill evidence. This strengthens
+the existing review workflow without changing finding matching or the schema.
+
+Evaluation remains location-based. It identifies comments overlapping authored
+finding ranges; it does not yet assess the quality or meaning of the reasoning.

@@ -2,8 +2,11 @@ package com.devlair.api.scenario;
 
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.Map;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,5 +37,10 @@ public class ScenarioController {
     ScenarioApi.ReviewFeedback submitReview(
             @PathVariable String slug, @Valid @RequestBody ScenarioApi.SubmitRequest request, Authentication authentication) {
         return scenarioService.submitReview(slug, authentication.getName(), request);
+    }
+
+    @ExceptionHandler(InvalidReviewCommentException.class)
+    ResponseEntity<Map<String, String>> handleInvalidComment(InvalidReviewCommentException exception) {
+        return ResponseEntity.badRequest().body(Map.of("message", exception.getMessage()));
     }
 }

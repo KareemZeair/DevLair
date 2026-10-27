@@ -9,8 +9,16 @@ pull-request tabs without changing the learning API. Home, a work queue, basic p
 skill evidence, and earned profile decorations are now available. More
 scenarios and app Dockerfiles are still later work.
 
-The near-term interface-polish work is tracked in `TODO.md`, including bespoke
-Kilo art, motion, dark mode, and the popup-guide direction.
+The signed-in entry point is now the Personal Desk, a local-time ambient cubicle
+scene with a clickable monitor that opens the Workstation. Its future mementos
+remain visual recognition, not progression currency or a substitute for skill
+evidence.
+
+The static Personal Desk closes the current visual-polish checkpoint. The
+cinemagraph is discontinued. Next work prioritizes review correctness and the
+first Core task, with incremental mentor-led explanations and verification.
+Server-side review validation now rejects invalid comment targets and empty
+submissions before recording attempts or skill evidence.
 
 The primary product remains learning mode. A separate employer assessment mode
 is a later possibility, only after the learning loop and scenario quality have

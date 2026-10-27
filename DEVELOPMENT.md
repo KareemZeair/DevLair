@@ -265,6 +265,67 @@ reduced motion also respects the operating system setting. On small screens the
 window manager becomes a full-screen workspace because dragging windows on a
 phone is not useful.
 
+The Company Browser title bar receives pointer events that bubble up from its
+children. Pointer capture lets a drag keep tracking after the pointer leaves
+the title bar, but capturing a Maximize or Minimize press can redirect its click
+away from the button. `startDrag` therefore ignores buttons and non-primary
+mouse presses. Regression tests reproduce the capture conflict and protect
+maximize/restore, saved placement, minimize, and ordinary title-bar dragging.
+
+## Personal Desk and Ambient Time
+
+The Personal Desk is a post-sign-in React view. It uses a project-owned comic
+background image and a small React timer that checks local browser time once
+per minute. The resulting scene period changes only visual lighting. It never
+changes learning data, scores, or the selected Day Shift or Night Shift theme.
+
+The Personal Desk currently uses a static illustration and time-based lighting.
+Both generic overlays and a generated rotor pasted over the finished fan failed
+visual review. A fan needs its blades behind the grille and fixed housing, with
+the scene's perspective preserved. An isolated rotor could not provide that.
+Cinemagraph work has been discontinued. The retained illustration uses compact
+controls, a visible monitor action, and a keyboard-accessible entry button.
+No new animation tools or libraries are needed. The remaining UI interaction
+transitions respect reduced-motion preferences.
+
+Artwork alignment uses one shared coordinate space. The scene retains the
+image's 1672 by 941 proportions. SVG lettering uses those same coordinates and
+an affine transform, which means scaling and tilting the text to fit the brass
+face. The background and text therefore resize together. On narrow screens,
+the complete scene sits between the header and controls instead of cropping
+the plaque away. SVG is used only for personalized lettering, not replacement
+illustration.
+
+## Mentor Checkpoint: Protecting the Review API
+
+The review request flows through these existing parts:
+
+1. React sends the comment list to `POST /api/scenarios/{slug}/reviews`.
+2. `ScenarioController` uses Jakarta validation to check the request's shape:
+   a nonempty list, no null entries, nonblank file paths and bodies, and positive
+   line numbers. HTTP is how the browser communicates with the Java server.
+3. `ScenarioService` checks meaning that depends on stored data: does each file
+   belong to this task, is it changed rather than read-only context, and does
+   the proposed line exist? These are domain rules, meaning rules of our product.
+4. Only after validation does the service evaluate the review and save the
+   submission and skill evidence. Its existing `@Transactional` boundary groups
+   the database writes so a failure cannot leave a partly saved review.
+5. An invalid target returns HTTP 400 with a message the existing React error
+   handler can show. No database migration is needed because storage has not
+   changed; the Java behavior around it has.
+
+The important distinction is that browser validation helps a person use the
+form, while server validation applies to every caller, including requests made
+without our interface. Tests deliberately send such requests directly through
+Spring's MockMvc test client. They verify both the error response and the lack
+of saved attempts or skill evidence. Positive cases protect valid blank and
+boundary lines from being rejected accidentally.
+
+The evaluator still matches file and line ranges. That is deterministic, but
+it is not an assessment of whether the comment's explanation is correct. Keep
+this limitation visible when interpreting evidence or designing the next Core
+task. Mentor mode continues with small explanations and verifiable checkpoints.
+
 ## Current Verification
 
 ```powershell

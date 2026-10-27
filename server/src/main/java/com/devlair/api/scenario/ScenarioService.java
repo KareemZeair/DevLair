@@ -4,6 +4,8 @@ import com.devlair.api.user.LearnerUser;
 import com.devlair.api.user.LearnerUserRepository;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -81,6 +83,7 @@ public class ScenarioService {
     @Transactional
     public ScenarioApi.ReviewFeedback submitReview(String slug, String learnerEmail, ScenarioApi.SubmitRequest request) {
         Scenario scenario = requireScenario(slug);
+        validateCommentTargets(scenario, request.comments());
         LearnerUser learner = learnerUserRepository.findByEmail(learnerEmail).orElseThrow();
         ReviewSubmission submission = new ReviewSubmission(learner.getId(), scenario.getId(), Instant.now());
         for (ScenarioApi.CommentRequest comment : request.comments()) {
@@ -91,6 +94,23 @@ public class ScenarioService {
         submissionRepository.save(submission);
         recordSkillEvidence(learner.getId(), scenario.getId(), findings, request.comments());
         return feedback;
+    }
+
+    private void validateCommentTargets(Scenario scenario, List<ScenarioApi.CommentRequest> comments) {
+        Map<String, Integer> proposedLineCounts = fileRepository.findByScenarioIdOrderByPathAsc(scenario.getId()).stream()
+                .filter(file -> "CHANGED".equals(file.getFileRole()))
+                .collect(Collectors.toMap(ScenarioFile::getPath, file -> {
+                    String content = file.getProposedContent();
+                    // Match LineDiffer, including the final blank line after a newline.
+                    return content.isEmpty() ? 0 : content.split("\n", -1).length;
+                }));
+
+        for (ScenarioApi.CommentRequest comment : comments) {
+            Integer lineCount = proposedLineCounts.get(comment.filePath());
+            if (lineCount == null || comment.lineNumber() < 1 || comment.lineNumber() > lineCount) {
+                throw new InvalidReviewCommentException();
+            }
+        }
     }
 
     private Scenario requireScenario(String slug) {

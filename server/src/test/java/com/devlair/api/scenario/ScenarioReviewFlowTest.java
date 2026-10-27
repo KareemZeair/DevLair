@@ -1,5 +1,6 @@
 package com.devlair.api.scenario;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -8,12 +9,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
@@ -35,6 +39,12 @@ class ScenarioReviewFlowTest {
 
     @Autowired
     private ReviewFindingRepository findingRepository;
+
+    @Autowired
+    private ReviewSubmissionRepository submissionRepository;
+
+    @Autowired
+    private LearnerScenarioSkillEvidenceRepository evidenceRepository;
 
     private MockHttpSession session;
 
@@ -116,5 +126,77 @@ class ScenarioReviewFlowTest {
     @Test
     void rejectsAnonymousScenarioAccess() throws Exception {
         mockMvc.perform(get("/api/scenarios")).andExpect(status().isUnauthorized());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "{\"comments\":[{\"filePath\":\"src/Missing.java\",\"lineNumber\":1,\"body\":\"Investigate this.\"}]}",
+            "{\"comments\":[{\"filePath\":\"src/Context.java\",\"lineNumber\":1,\"body\":\"Investigate this.\"}]}",
+            "{\"comments\":[{\"filePath\":\"src/OtherTask.java\",\"lineNumber\":1,\"body\":\"Investigate this.\"}]}",
+            "{\"comments\":[{\"filePath\":\"src/Removed.java\",\"lineNumber\":1,\"body\":\"Investigate this.\"}]}",
+            "{\"comments\":[{\"filePath\":\"src/OrderService.java\",\"lineNumber\":5,\"body\":\"Investigate this.\"}]}",
+            "{\"comments\":[{\"filePath\":\"src/OrderService.java\",\"lineNumber\":1,\"body\":\"Valid location.\"},{\"filePath\":\"src/Missing.java\",\"lineNumber\":1,\"body\":\"Invalid location.\"}]}"
+    })
+    void rejectsInvalidTargetsWithoutSavingAnAttemptOrEvidence(String request) throws Exception {
+        seedCommentValidationScenario();
+
+        mockMvc.perform(post("/api/scenarios/comment-validation/reviews")
+                        .session(session).with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON).content(request))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Each comment must refer to a proposed line in a changed file for this task. Reload the pull request and check your comment locations."));
+
+        assertThat(submissionRepository.count()).isZero();
+        assertThat(evidenceRepository.count()).isZero();
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "{}", "{\"comments\":null}", "{\"comments\":[]}", "{\"comments\":[null]}",
+            "{\"comments\":[{\"filePath\":\"src/OrderService.java\",\"lineNumber\":0,\"body\":\"Invalid line.\"}]}",
+            "{\"comments\":[{\"filePath\":\"src/OrderService.java\",\"lineNumber\":1,\"body\":\"   \"}]}"
+    })
+    void rejectsMalformedReviewsWithoutRecordingCompletion(String request) throws Exception {
+        seedCommentValidationScenario();
+
+        mockMvc.perform(post("/api/scenarios/comment-validation/reviews")
+                        .session(session).with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON).content(request))
+                .andExpect(status().isBadRequest());
+
+        assertThat(submissionRepository.count()).isZero();
+        assertThat(evidenceRepository.count()).isZero();
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {1, 2, 3, 4})
+    void acceptsEveryProposedLineShownByTheDiffIncludingBlankLines(int lineNumber) throws Exception {
+        seedCommentValidationScenario();
+
+        mockMvc.perform(post("/api/scenarios/comment-validation/reviews")
+                        .session(session).with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"comments":[{"filePath":"src/OrderService.java","lineNumber":%d,"body":"Please check this behavior."}]}
+                                """.formatted(lineNumber)))
+                .andExpect(status().isOk());
+
+        assertThat(submissionRepository.findAll()).singleElement().satisfies(submission ->
+                assertThat(submission.getComments()).extracting(ReviewComment::getLineNumber).containsExactly(lineNumber));
+    }
+
+    private void seedCommentValidationScenario() {
+        Scenario scenario = scenarioRepository.save(new Scenario("comment-validation", "PR validation", "Review comment locations."));
+        fileRepository.save(new ScenarioFile(scenario.getId(), "src/OrderService.java", "class OrderService {}", "class OrderService {\n\n}\n"));
+        fileRepository.save(new ScenarioFile(scenario.getId(), "src/Removed.java", "class Removed {}", ""));
+
+        ScenarioFile context = new ScenarioFile(scenario.getId(), "src/Context.java", "class Context {}", "class Context {}");
+        ReflectionTestUtils.setField(context, "fileRole", "CONTEXT");
+        fileRepository.save(context);
+
+        Scenario other = scenarioRepository.save(new Scenario("another-task", "Another PR", "Separate task."));
+        fileRepository.save(new ScenarioFile(other.getId(), "src/OtherTask.java", "", "class OtherTask {}"));
+        findingRepository.save(new ReviewFinding(scenario.getId(), "src/OrderService.java", 1, 3,
+                "HIGH", "Prepared finding", "An authored explanation.", "class OrderService {}"));
     }
 }

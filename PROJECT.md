@@ -216,6 +216,17 @@ are the top-level units of practice; tickets, pull requests, logs, and future
 incident artifacts live inside the relevant task rather than becoming separate
 pretend applications.
 
+The Personal Desk is the post-sign-in entry point. It is a comic cubicle with a
+clickable monitor that opens the Workstation. Its ambient lighting follows the
+learner's local time, while the Workstation's Day Shift and Night Shift setting
+continues to control readable application colors. The desk can display earned
+mementos and a company plaque, but it does not invent progression data.
+
+The Personal Desk uses a static interactive illustration. Compact account and
+entry controls leave the artwork visible; the monitor and an explicit button
+open the Workstation. Cinemagraph production is discontinued. Further visual
+expansion waits while the product develops stronger review practice.
+
 Skill evidence is based on deterministic prepared findings in the scenarios a
 learner has completed. It is useful feedback for learning, not a universal
 engineering score or a leaderboard rating. Desk decorations are meaningful

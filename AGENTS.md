@@ -117,6 +117,13 @@ the application parts work together, not receive opaque generated code.
   learner problem and testable hypothesis, build the smallest useful slice,
   identify a meaningful behavior or outcome to measure, then decide whether to
   continue, adjust, or stop. Prefer learning metrics over vanity metrics.
+- For visual work, prefer integrated project-owned artwork and scene-matched
+  motion layers. Do not place generic CSS pseudo-art over a finished
+  illustration as a substitute for animation.
+- The Personal Desk cinemagraph has been dropped. After the bounded static-desk
+  polish, prioritize the core learning product and small mentor-led engineering
+  checkpoints. Do not restart decorative animation or animation-tool setup
+  unless the developer explicitly reopens that work.
 
 ## Important
 
